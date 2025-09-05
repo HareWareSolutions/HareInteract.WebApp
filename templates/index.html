@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HareInteract</title>
+
+    <!-- Fonte Roboto e ícones do Material -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+    <!-- Importa os Web Components do Material -->
+    <script type="module">
+        import 'https://unpkg.com/@material/web/textfield/filled-text-field.js?module';
+        import 'https://unpkg.com/@material/web/checkbox/checkbox.js?module';
+        import 'https://unpkg.com/@material/web/button/filled-button.js?module';
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #111827, #1f2937, #111827);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            font-family: Roboto, sans-serif;
+        }
+        .card {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            color: white;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .link {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>Login do Sistema</h2>
+    <form action="/" method="POST">
+
+        <!-- Campo Usuário -->
+        <md-filled-text-field
+                label="Usuário"
+                name="usuario"
+                required
+                style="width: 100%;">
+        </md-filled-text-field>
+
+        <!-- Campo Senha -->
+        <md-filled-text-field
+                label="Senha"
+                type="password"
+                name="senha"
+                required
+                style="width: 100%;">
+        </md-filled-text-field>
+
+        <!-- Opções extras -->
+        <div class="actions">
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                <md-checkbox></md-checkbox>
+                Lembrar de mim
+            </label>
+            <a href="#" class="link">Esqueceu a senha?</a>
+        </div>
+
+        <!-- Botão -->
+        <md-filled-button type="submit" style="width: 100%;">
+            Entrar
+        </md-filled-button>
+    </form>
+
+    <p class="footer">
+        Ainda não tem uma conta?
+        <a href="#" class="link">Registrar</a>
+    </p>
+</div>
+</body>
+</html>
