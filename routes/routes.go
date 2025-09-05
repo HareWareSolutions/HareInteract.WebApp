@@ -6,5 +6,8 @@ import (
 )
 
 func CarregaRotas() {
-	http.HandleFunc("/", controllers.Index)
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	http.HandleFunc("/", controllers.LoginHandler)
 }

@@ -2,26 +2,28 @@ package IAM
 
 import (
 	"HareInteract.WebApp/db"
+	"database/sql"
+	"fmt"
 )
 
 type Usuario struct {
-	Id    int    `json:"id" validate:"required"`
-	Nome  string `json:"nome" validate:"required"`
-	Email string `json:"email" validate:"required,email"`
-	User  string `json:"usuario" validate:"required"`
-	Senha string `json:"senha" validate:"required,senha"`
-	Ativo bool   `json:"ativo"`
+	Id       int    `json:"id" validate:"required"`
+	Nome     string `json:"nome" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
+	Username string `json:"usuario" validate:"required"`
+	Senha    string `json:"senha" validate:"required,senha"`
+	Ativo    bool   `json:"ativo"`
 }
 
-func CriarUsuario(nome, email, user, senha string) {
+func CriarUsuario(nome, email, username, senha string) {
 	db := db.ConectaBD("public")
 
-	cadastrarUsuario, err := db.Prepare("insert into usuario(nome, email, user, senha, ativo) values($1, $2, $3, $4, $5)")
+	cadastrarUsuario, err := db.Prepare("insert into usuario(nome, email, username, senha, ativo) values($1, $2, $3, $4, $5)")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	cadastrarUsuario.Exec(nome, email, user, senha, true)
+	cadastrarUsuario.Exec(nome, email, username, senha, true)
 	defer db.Close()
 }
 
@@ -49,10 +51,10 @@ func ObterUsuario(id string) Usuario {
 
 	for usuario.Next() {
 		var id int
-		var nome, email, user, senha string
+		var nome, email, username, senha string
 		var ativo bool
 
-		err = usuario.Scan(&id, &nome, &email, &user, &senha, &ativo)
+		err = usuario.Scan(&id, &nome, &email, &username, &senha, &ativo)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -60,7 +62,7 @@ func ObterUsuario(id string) Usuario {
 		usuarioParaEditar.Id = id
 		usuarioParaEditar.Nome = nome
 		usuarioParaEditar.Email = email
-		usuarioParaEditar.User = user
+		usuarioParaEditar.Username = username
 		usuarioParaEditar.Senha = senha
 		usuarioParaEditar.Ativo = ativo
 	}
@@ -68,14 +70,33 @@ func ObterUsuario(id string) Usuario {
 	return usuarioParaEditar
 }
 
-func AtualizarUsuario(id int, nome, email, user, senha string, ativo bool) {
+func LoginUsuario(username string) (Usuario, error) {
 	db := db.ConectaBD("public")
 
-	UsuarioAtualizado, err := db.Prepare("update usuario set nome=$1, email=$2, user=$3, senha=$4, ativo=$5 where id=$6")
+	row := db.QueryRow("SELECT id, username, senha, ativo FROM usuario WHERE username = $1", username)
+
+	var usuario Usuario
+
+	err := row.Scan(&usuario.Id, &usuario.Username, &usuario.Senha, &usuario.Ativo)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return Usuario{}, fmt.Errorf("usuário '%s' não encontrado", username)
+		}
+		return Usuario{}, fmt.Errorf("erro ao buscar usuário: %v", err)
+	}
+
+	defer db.Close()
+	return usuario, nil
+}
+
+func AtualizarUsuario(id int, nome, email, username, senha string, ativo bool) {
+	db := db.ConectaBD("public")
+
+	UsuarioAtualizado, err := db.Prepare("update usuario set nome=$1, email=$2, username=$3, senha=$4, ativo=$5 where id=$6")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	UsuarioAtualizado.Exec(nome, email, user, senha, ativo, id)
+	UsuarioAtualizado.Exec(nome, email, username, senha, ativo, id)
 	defer db.Close()
 }

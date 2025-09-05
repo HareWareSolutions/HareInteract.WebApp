@@ -1,0 +1,89 @@
+body {
+    --md-sys-color-primary: #04c0e2;
+    background: white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    font-family: Roboto, sans-serif;
+}
+.card {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    color: white;
+}
+h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: #04c0e2;
+}
+.link {
+    color: #04c0e2;
+    text-decoration: none;
+}
+.link:hover {
+    text-decoration: underline;
+}
+.footer {
+    text-align: center;
+    font-size: 0.875rem;
+    color: #04c0e2;
+    margin-top: 1.5rem;
+}
+/* Estilos para o Logo */
+.logo {
+    display: block;
+    width: 150px;
+    margin: 0 auto 1.5rem auto;
+}
+/* Estilos para os campos de texto do Material */
+md-filled-text-field {
+    /* Cores Padrão */
+    --md-filled-text-field-label-text-color: rgba(4, 192, 226, 0.7);
+    --md-filled-text-field-input-text-color: rgba(4, 192, 226, 0.9);
+    --md-filled-text-field-container-color: rgba(4, 192, 226, 0.1);
+}
+
+/* Cores no estado de HOVER (passar o mouse por cima) */
+md-filled-text-field:hover {
+    --md-filled-text-field-label-text-color: #04c0e2;
+    --md-filled-text-field-input-text-color: #04c0e2;
+    --md-filled-text-field-container-color: rgba(4, 192, 226, 0.2);
+}
+
+/* Cores no estado de FOCUS (campo selecionado) */
+md-filled-text-field:focus-within {
+    --md-filled-text-field-label-text-color: #04c0e2;
+    --md-filled-text-field-input-text-color: #04c0e2;
+    --md-filled-text-field-container-color: rgba(4, 192, 226, 0.2);
+    --md-filled-text-field-focus-active-indicator-color: #04c0e2;
+
+    /* NOVA LINHA: Controla a cor do rótulo no estado de foco */
+    --md-filled-text-field-label-text-color-focused: #04c0e2;
+}
+
+/* Estilos para o botão */
+md-filled-button {
+    --md-filled-button-container-color: #04c0e2;
+    --md-filled-button-label-text-color: #1f2937;
+}
