@@ -1,6 +1,6 @@
 body {
     --md-sys-color-primary: #04c0e2;
-    background: white;
+    background: whitesmoke;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -11,12 +11,12 @@ body {
 .card {
     width: 100%;
     max-width: 400px;
-    background: rgba(255, 255, 255, 0.05);
+    background: white;
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 1rem;
     padding: 2rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 24px rgba(4, 192, 226, 0.9);
     color: white;
 }
 h2 {
@@ -85,5 +85,5 @@ md-filled-text-field:focus-within {
 /* Estilos para o botão */
 md-filled-button {
     --md-filled-button-container-color: #04c0e2;
-    --md-filled-button-label-text-color: #1f2937;
+    --md-filled-button-label-text-color: #ffff;
 }

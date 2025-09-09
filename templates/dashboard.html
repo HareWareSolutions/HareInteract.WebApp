@@ -1,10 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HareInteract</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="/static/styles/menu.css">
+    <link rel="stylesheet" href="/static/styles/dashboard.css">
+
+    <script type="module">
+        import 'https://unpkg.com/@material/web/textfield/filled-text-field.js?module';
+        import 'https://unpkg.com/@material/web/checkbox/checkbox.js?module';
+        import 'https://unpkg.com/@material/web/button/filled-button.js?module';
+    </script>
 </head>
+
 <body>
-<h1>Logado</h1>
+{{template "menu.html"}}
+
+<div class="main-content">
+    <h1>Dashboard</h1>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Pesquisar..." class="search-input">
+        <span class="material-symbols-outlined search-icon">search</span>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid">
+        <a href="/contatos" class="card" data-title="Contatos">
+            <span class="material-symbols-outlined icon">contacts</span>
+            <p>Contatos</p>
+        </a>
+        <a href="/empresas" class="card" data-title="Empresas">
+            <span class="material-symbols-outlined icon">business</span>
+            <p>Empresas</p>
+        </a>
+        <a href="/leads" class="card" data-title="Leads">
+            <span class="material-symbols-outlined icon">person_add</span>
+            <p>Leads</p>
+        </a>
+        <a href="/oportunidades" class="card" data-title="Oportunidades">
+            <span class="material-symbols-outlined icon">attach_money</span>
+            <p>Oportunidades</p>
+        </a>
+        <a href="/campanhas" class="card" data-title="Campanhas">
+            <span class="material-symbols-outlined icon">campaign</span>
+            <p>Campanhas</p>
+        </a>
+        <a href="/tickets" class="card" data-title="Tickets">
+            <span class="material-symbols-outlined icon">receipt</span>
+            <p>Tickets</p>
+        </a>
+        <a href="/atividades" class="card" data-title="Atividades">
+            <span class="material-symbols-outlined icon">event_note</span>
+            <p>Atividades</p>
+        </a>
+        <a href="/whatsapp" class="card" data-title="WhatsApp">
+            <span class="material-symbols-outlined icon">phone_in_talk</span>
+            <p>WhatsApp</p>
+        </a>
+        <a href="/inteligencia-artificial" class="card" data-title="Inteligência Artificial">
+            <span class="material-symbols-outlined icon">smart_toy</span>
+            <p>Inteligência Artificial</p>
+        </a>
+    </div>
+</div>
+
+<script src="/static/scripts/dashboard.js"></script>
+
 </body>
 </html>

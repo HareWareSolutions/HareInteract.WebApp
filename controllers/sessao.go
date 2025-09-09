@@ -2,12 +2,9 @@ package controllers
 
 import (
 	"HareInteract.WebApp/models/IAM"
-	"html/template"
 	"log"
 	"net/http"
 )
-
-var templates = template.Must(template.ParseFiles("templates/index.html"))
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
@@ -25,7 +22,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if usuario == usuario_correto.Username && senha == usuario_correto.Senha {
-			templates.ExecuteTemplate(w, "dashboard.html", nil)
+			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 			return
 		} else {
 			log.Println("Credenciais inválidas para o usuário:", usuario)

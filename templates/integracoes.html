@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HareInteract</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="/static/styles/menu.css">
+    <link rel="stylesheet" href="/static/styles/dashboard.css">
+
+    <script type="module">
+        import 'https://unpkg.com/@material/web/textfield/filled-text-field.js?module';
+        import 'https://unpkg.com/@material/web/checkbox/checkbox.js?module';
+        import 'https://unpkg.com/@material/web/button/filled-button.js?module';
+    </script>
+</head>
+
+<body>
+{{template "menu.html"}}
+
+<div class="main-content">
+    <h1>Integrações</h1>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Pesquisar..." class="search-input">
+        <span class="material-symbols-outlined search-icon">search</span>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid">
+        <a href="/inteligencia-artificial" class="card" data-title="Inteligência Artificial">
+            <span class="material-symbols-outlined icon">smart_toy</span>
+            <p>Inteligência Artificial</p>
+        </a>
+
+        <a href="/whatsapp" class="card" data-title="WhatsApp">
+            <span class="material-symbols-outlined icon">phone_in_talk</span>
+            <p>WhatsApp</p>
+        </a>
+    </div>
+</div>
+
+<script src="/static/scripts/dashboard.js"></script>
+</body>
+</html>
