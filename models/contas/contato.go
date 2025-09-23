@@ -16,6 +16,12 @@ type Contato struct {
 }
 
 func CriarContato(search_path string, empresa int, nome, sobrenome, cargo, email, telefone, responsavel int) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	cadastrarContato, err := db.Prepare("insert into contato (empresa, nome, sobrenome, cargo, email, telefone, responsavel) values($1,$2,$3,$4,$5,$6,$7)")
@@ -28,6 +34,12 @@ func CriarContato(search_path string, empresa int, nome, sobrenome, cargo, email
 }
 
 func DeletaContato(search_path, id string) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	deletarContato, err := db.Prepare("delete from contato where id = $1")
@@ -40,6 +52,12 @@ func DeletaContato(search_path, id string) {
 }
 
 func ObterContato(search_path, id string) Contato {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	contato, err := db.Query("select * from contato where id = $1", id)
@@ -72,6 +90,12 @@ func ObterContato(search_path, id string) Contato {
 }
 
 func AtualizarContato(search_path string, id, empresa, responsavel int, nome, sobrenome, cargo, email, telefone string) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	ContatoAtualizado, err := db.Prepare("update contato set empresa=$1, nome=$2, sobrenome=$3, cargo=$4, email=$5, telefone=$6, responsavel=$7 where id = $8")

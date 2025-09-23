@@ -19,6 +19,12 @@ type Oportunidade struct {
 }
 
 func CriarOportunidade(search_path string, titulo, etapaFunil, status string, empresa, contato, probabilidade, responsavel int, valorEstimado float64) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	dataCriacao := time.Now()
@@ -33,6 +39,12 @@ func CriarOportunidade(search_path string, titulo, etapaFunil, status string, em
 }
 
 func DeletaOportunidade(search_path, id string) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	deletarOportunidade, err := db.Prepare("delete * from oportunidade where id=$1")
@@ -45,6 +57,12 @@ func DeletaOportunidade(search_path, id string) {
 }
 
 func ObterOportunidade(search_path, id string) Oportunidade {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	oportunidade, err := db.Query("select * from oportunidade where id=$1", id)
@@ -79,6 +97,12 @@ func ObterOportunidade(search_path, id string) Oportunidade {
 }
 
 func AtualizarOportunidade(search_path string, id, empresa, contato, probabilidade, responsavel int, titulo, etapaFunil, status string, valorEstimado float64) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	oportunidadeAtualizada, err := db.Prepare("update oportunidade set titulo=$1, empresa=$2, contato=$3, valorEstimado=$4, etapaFunil=$5, probabilidade=$6, status=$7, responsavel=$8 where id=$9")

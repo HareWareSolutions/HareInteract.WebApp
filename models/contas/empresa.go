@@ -18,6 +18,12 @@ type Empresa struct {
 }
 
 func CriarEmpresa(search_path, razaoSocial, cnpj, telefone, site, pais, cidade, estado, cep, setor string) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	cadastrarEmpresa, err := db.Prepare("insert into empresa(razaoSocial, cnpj, telefone, site, pais, cidade, estado, cep, setor) values($1, $2, $3, $4, $5, $6, $7, $8, $9)")
@@ -30,6 +36,12 @@ func CriarEmpresa(search_path, razaoSocial, cnpj, telefone, site, pais, cidade, 
 }
 
 func DeletaEmpresa(search_path string, id int) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	deletarEmpresa, err := db.Prepare("delete from empresa where id=$1")
@@ -42,6 +54,12 @@ func DeletaEmpresa(search_path string, id int) {
 }
 
 func ObterEmpresa(search_path string, id int) Empresa {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	empresa, err := db.Query("select * from empresa where id=$1", id)
@@ -76,6 +94,12 @@ func ObterEmpresa(search_path string, id int) Empresa {
 }
 
 func AtualizarEmpresa(search_path string, id int, razaoSocial, cnpj, telefone, site, pais, cidade, estado, cep, setor string) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	EmpresaAtualizada, err := db.Prepare("update empresa set razaoSocial=$1, cnpj=$2, telefone=$3, site=$4, pais=$5, cidade=$6, estado=$7, cep=$8, setor=$9 where id=$10")

@@ -16,6 +16,12 @@ type Lead struct {
 }
 
 func CriarLead(search_path string, id, responsavel int, nome, email, telefone, empresa, origem, status string) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	cadastrarLead, err := db.Prepare("insert into lead(nome, email, telefone, empresa, origem, status, responsavel) values($1, $2, $3, $4, $5, $6, $7)")
@@ -28,6 +34,12 @@ func CriarLead(search_path string, id, responsavel int, nome, email, telefone, e
 }
 
 func DeletaLead(search_path string, id int) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	deletarLead, err := db.Prepare("delete from lead where id = $1")
@@ -39,8 +51,14 @@ func DeletaLead(search_path string, id int) {
 	defer db.Close()
 }
 
-func ObterLead(serch_path string, id int) Lead {
-	db := db.ConectaBD(serch_path)
+func ObterLead(search_path string, id int) Lead {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
+	db := db.ConectaBD(search_path)
 
 	lead, err := db.Query("select * from lead where id = $1", id)
 	if err != nil {
@@ -72,6 +90,12 @@ func ObterLead(serch_path string, id int) Lead {
 }
 
 func AtualizarLead(search_path string, id, responsavel int, nome, email, telefone, empresa, origem, status string) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	leadAtualizado, err := db.Prepare("update lead set nome=$1, email=$2, telefone=$3, empresa=$4, origem=$5, status=$6, responsavel=$7 where id=$8")

@@ -11,12 +11,16 @@ func CarregaRotas() {
 
 	http.HandleFunc("/", controllers.LoginHandler)
 
-	http.HandleFunc("/dashboard", controllers.DashboardHandler)
-	http.HandleFunc("/dashboard/contas", controllers.ContasHandler)
-	http.HandleFunc("/dashboard/vendas", controllers.VendasHandler)
-	http.HandleFunc("/dashboard/marketing", controllers.MarketingHandler)
-	http.HandleFunc("/dashboard/atendimento", controllers.AtendimentoHandler)
-	http.HandleFunc("/dashboard/timeline", controllers.TimelineHandler)
-	http.HandleFunc("/dashboard/integracoes", controllers.IntegracoesHandler)
-	http.HandleFunc("/dashboard/configuracoes", controllers.ConfiguracoesHandler)
+	http.HandleFunc("/dashboard", controllers.AuthMiddleware(controllers.DashboardHandler))
+	http.HandleFunc("/contas", controllers.AuthMiddleware(controllers.ContasHandler))
+	http.HandleFunc("/vendas", controllers.AuthMiddleware(controllers.VendasHandler))
+	http.HandleFunc("/marketing", controllers.AuthMiddleware(controllers.MarketingHandler))
+	http.HandleFunc("/atendimento", controllers.AuthMiddleware(controllers.AtendimentoHandler))
+	http.HandleFunc("/timeline", controllers.AuthMiddleware(controllers.TimelineHandler))
+	http.HandleFunc("/integracoes", controllers.AuthMiddleware(controllers.IntegracoesHandler))
+	http.HandleFunc("/configuracoes", controllers.AuthMiddleware(controllers.ConfiguracoesHandler))
+
+	http.HandleFunc("/whatsapp", controllers.AuthMiddleware(controllers.WhatsAppHandler))
+	http.HandleFunc("/whatsapp/criarInstancia", controllers.AuthMiddleware(controllers.CriarInstanciaHandler))
+	http.HandleFunc("/whatsapp/qrcode", controllers.AuthMiddleware(controllers.QrCodeHandler))
 }

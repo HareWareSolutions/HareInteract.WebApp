@@ -9,6 +9,7 @@ type Organizacao struct {
 	Id            int       `json:"id" validate:"required"`
 	Nome          string    `json:"nome" validate:"required,min=3,max=100"`
 	ResponsavelId int       `json:"responsavelId" validate:"required"`
+	Cpfcnpj       string    `json:"cpfcnpj" validate:"required,min=3,max=100"`
 	Pais          string    `json:"pais"`
 	Cidade        string    `json:"cidade"`
 	Estado        string    `json:"estado"`
@@ -16,22 +17,23 @@ type Organizacao struct {
 	DataCadastro  time.Time `json:"dataCadastro" validate:"required"`
 }
 
-func CriarOrganizacao(nome string, responsavelId int, pais string, cidade string, estado string, telefone string) {
+func CriarOrganizacao(nome string, responsavelId int, cpfcnpj string, pais string, cidade string, estado string, telefone string) {
 	db := db.ConectaBD("public")
+	defer db.Close()
 
 	dataCadastro := time.Now()
 
-	cadastrarOrganizacao, err := db.Prepare("insert into organizacao(nome, responsavelId, pais, cidade, estado, telefone, dataCadastro) values($1, $2, $3, $4, $5, $6, $7)")
+	cadastrarOrganizacao, err := db.Prepare("insert into organizacao(nome, responsavel, cpfcnpj, pais, cidade, estado, telefone, data_cadastro) values($1, $2, $3, $4, $5, $6, $7, $8)")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	cadastrarOrganizacao.Exec(nome, responsavelId, pais, cidade, estado, telefone, dataCadastro)
-	defer db.Close()
+	cadastrarOrganizacao.Exec(nome, responsavelId, cpfcnpj, pais, cidade, estado, telefone, dataCadastro)
 }
 
 func DeletaOrganizacao(id string) {
 	db := db.ConectaBD("public")
+	defer db.Close()
 
 	deletarOrganizacao, err := db.Prepare("delete from organizacao where id = $1")
 	if err != nil {
@@ -39,24 +41,26 @@ func DeletaOrganizacao(id string) {
 	}
 
 	deletarOrganizacao.Exec(id)
-	defer db.Close()
 }
 
 func ObterOrganizacao(id string) Organizacao {
 	db := db.ConectaBD("public")
+	defer db.Close()
 
 	organizacao, err := db.Query("select * from organizacao where id = $1", id)
 	if err != nil {
 		panic(err.Error())
 	}
+	defer organizacao.Close()
 
 	organizacaoParaEditar := Organizacao{}
 
-	for organizacao.Next() {
+	if organizacao.Next() {
 		var id, responsavelId int
-		var nome, pais, cidade, estado, telefone string
+		var nome, cpfcnpj, pais, cidade, estado, telefone string
+		var dataCadastro time.Time
 
-		err = organizacao.Scan(&id, &nome, &responsavelId, &pais, &cidade, &estado, &telefone)
+		err = organizacao.Scan(&id, &nome, &responsavelId, &cpfcnpj, &pais, &cidade, &estado, &telefone, &dataCadastro)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -64,23 +68,24 @@ func ObterOrganizacao(id string) Organizacao {
 		organizacaoParaEditar.Id = id
 		organizacaoParaEditar.Nome = nome
 		organizacaoParaEditar.ResponsavelId = responsavelId
+		organizacaoParaEditar.Cpfcnpj = cpfcnpj
 		organizacaoParaEditar.Pais = pais
 		organizacaoParaEditar.Cidade = cidade
 		organizacaoParaEditar.Estado = estado
 		organizacaoParaEditar.Telefone = telefone
+		organizacaoParaEditar.DataCadastro = dataCadastro
 	}
-	defer db.Close()
 	return organizacaoParaEditar
 }
 
-func AtualizarOrganizacao(id int, nome string, responsavelId int, pais, cidade, estado, telefone string) {
+func AtualizarOrganizacao(id int, nome string, responsavelId int, cpfcnpj, pais, cidade, estado, telefone string) {
 	db := db.ConectaBD("public")
+	defer db.Close()
 
-	OrganizacaoAtualizada, err := db.Prepare("update organizacao set nome=$1, responsavelId=$2, pais=$3, cidade=$4, estado=$5, telefone=$6 where id = $7")
+	OrganizacaoAtualizada, err := db.Prepare("update organizacao set nome=$1, responsavel=$2, cpfcnpj=$3, pais=$4, cidade=$5, estado=$6, telefone=$7 where id = $8")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	OrganizacaoAtualizada.Exec(nome, responsavelId, pais, cidade, estado, telefone, id)
-	defer db.Close()
+	OrganizacaoAtualizada.Exec(nome, responsavelId, cpfcnpj, pais, cidade, estado, telefone, id)
 }

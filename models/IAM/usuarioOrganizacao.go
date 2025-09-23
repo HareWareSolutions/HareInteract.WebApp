@@ -18,7 +18,7 @@ func CriarUsuarioOrganizacao(usuario, organizacao int, nivelAcesso string) {
 
 	dataCadastro := time.Now()
 
-	inserirUsuarioOrganizacao, err := db.Prepare("insert into usuarioOrganizacao(usuario, organizacao, nivelAcesso, dataCadastro) values($1, $2, $3, $4)")
+	inserirUsuarioOrganizacao, err := db.Prepare("insert into usuario_organizacao(usuario, organizacao, nivel_acesso, dataCadastro) values($1, $2, $3, $4)")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -30,7 +30,7 @@ func CriarUsuarioOrganizacao(usuario, organizacao int, nivelAcesso string) {
 func DeletaUsuarioOrganizacao(usuario int) {
 	db := db.ConectaBD("public")
 
-	deletarUsuarioOrganizacao, err := db.Prepare("delete from usuarioOrganizacao where usuario = $1")
+	deletarUsuarioOrganizacao, err := db.Prepare("delete from usuario_organizacao where usuario = $1")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -44,7 +44,7 @@ func ObterUsuarioOrganizacao(id int) UsuarioOrganizacao {
 
 	usuarioOrganizacaoParaEditar := UsuarioOrganizacao{}
 
-	row := db.QueryRow("select id, usuario, organizacao, nivelAcesso from usuarioOrganizacao where id = $1", id)
+	row := db.QueryRow("select id, usuario, organizacao, nivel_acesso from usuario_organizacao where id = $1", id)
 
 	var id_db, usuario_db, organizacao_db int
 	var nivelAcesso_db string
@@ -63,10 +63,34 @@ func ObterUsuarioOrganizacao(id int) UsuarioOrganizacao {
 	return usuarioOrganizacaoParaEditar
 }
 
+func ObterUsuarioOrganizacaoPorUsuario(usuarioId int) UsuarioOrganizacao {
+	db := db.ConectaBD("public")
+
+	usuarioOrganizacaoRecuperado := UsuarioOrganizacao{}
+
+	row := db.QueryRow("select id, usuario, organizacao, nivel_acesso from usuario_organizacao where usuario = $1", usuarioId)
+
+	var id_db, usuario_db, organizacao_db int
+	var nivelAcesso_db string
+
+	err := row.Scan(&id_db, &usuario_db, &organizacao_db, &nivelAcesso_db)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	usuarioOrganizacaoRecuperado.Id = id_db
+	usuarioOrganizacaoRecuperado.Usuario = usuario_db
+	usuarioOrganizacaoRecuperado.Organizacao = organizacao_db
+	usuarioOrganizacaoRecuperado.NivelAcesso = nivelAcesso_db
+
+	defer db.Close()
+	return usuarioOrganizacaoRecuperado
+}
+
 func AtualizarUsuarioOrganizacao(id, usuario, organizacao int, nivelAcesso string) {
 	db := db.ConectaBD("public")
 
-	UsuarioOrganizacaoAtualizada, err := db.Prepare("update usuarioOrganizacao set usuario=$1, organizacao=$2, nivelAcesso=$3 where id = $4")
+	UsuarioOrganizacaoAtualizada, err := db.Prepare("update usuario_organizacao set usuario=$1, organizacao=$2, nivel_acesso=$3 where id = $4")
 	if err != nil {
 		panic(err.Error())
 	}

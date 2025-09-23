@@ -5,32 +5,100 @@ import (
 )
 
 func DashboardHandler(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "dashboard.html", nil)
+	searchPath, ok := r.Context().Value(orgCpfCnpjKey).(string)
+	if !ok {
+		http.Error(w, "Informações de sessão não encontradas.", http.StatusUnauthorized)
+		return
+	}
+
+	data := map[string]interface{}{
+		"searchPath": searchPath,
+	}
+	templates.ExecuteTemplate(w, "dashboard.html", data)
 }
 
 func ContasHandler(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "contas.html", nil)
+	searchPath := r.URL.Query().Get("orgCpfCnpj")
+	data := map[string]interface{}{
+		"searchPath": searchPath,
+	}
+	templates.ExecuteTemplate(w, "contas.html", data)
 }
 
 func VendasHandler(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "vendas.html", nil)
+	searchPath, ok := r.Context().Value(orgCpfCnpjKey).(string)
+	if !ok {
+		http.Error(w, "Informações de sessão não encontradas.", http.StatusUnauthorized)
+		return
+	}
+
+	data := map[string]interface{}{
+		"searchPath": searchPath,
+	}
+	templates.ExecuteTemplate(w, "vendas.html", data)
 }
 
 func MarketingHandler(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "marketing.html", nil)
+	searchPath, ok := r.Context().Value(orgCpfCnpjKey).(string)
+	if !ok {
+		http.Error(w, "Informações de sessão não encontradas.", http.StatusUnauthorized)
+		return
+	}
+
+	data := map[string]interface{}{
+		"searchPath": searchPath,
+	}
+	templates.ExecuteTemplate(w, "marketing.html", data)
 }
 
 func AtendimentoHandler(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "atendimento.html", nil)
+	searchPath, ok := r.Context().Value(orgCpfCnpjKey).(string)
+	if !ok {
+		http.Error(w, "Informações de sessão não encontradas.", http.StatusUnauthorized)
+		return
+	}
+
+	data := map[string]interface{}{
+		"searchPath": searchPath,
+	}
+	templates.ExecuteTemplate(w, "atendimento.html", data)
 }
+
 func TimelineHandler(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "timeline.html", nil)
+	searchPath, ok := r.Context().Value(orgCpfCnpjKey).(string)
+	if !ok {
+		http.Error(w, "Informações de sessão não encontradas.", http.StatusUnauthorized)
+		return
+	}
+
+	data := map[string]interface{}{
+		"searchPath": searchPath,
+	}
+	templates.ExecuteTemplate(w, "timeline.html", data)
 }
 
 func IntegracoesHandler(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "integracoes.html", nil)
+	searchPath, ok := r.Context().Value(orgCpfCnpjKey).(string)
+	if !ok {
+		http.Error(w, "Informações de sessão não encontradas.", http.StatusUnauthorized)
+		return
+	}
+
+	data := map[string]interface{}{
+		"searchPath": searchPath,
+	}
+	templates.ExecuteTemplate(w, "integracoes.html", data)
 }
 
 func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "configuracoes.html", nil)
+	searchPath, ok := r.Context().Value(orgCpfCnpjKey).(string)
+	if !ok {
+		http.Error(w, "Informações de sessão não encontradas.", http.StatusUnauthorized)
+		return
+	}
+
+	data := map[string]interface{}{
+		"searchPath": searchPath,
+	}
+	templates.ExecuteTemplate(w, "configuracoes.html", data)
 }

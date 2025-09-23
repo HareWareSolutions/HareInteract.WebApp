@@ -16,6 +16,12 @@ type Atividade struct {
 }
 
 func CriarAtividade(search_path, assunto, tipo, status, descricao string, dataVencimento time.Time) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	dataCriacao := time.Now()
@@ -30,6 +36,12 @@ func CriarAtividade(search_path, assunto, tipo, status, descricao string, dataVe
 }
 
 func DeletaAtividade(search_path, id string) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	deletarAtividade, err := db.Prepare("delete from atividade where id=$1")
@@ -42,6 +54,12 @@ func DeletaAtividade(search_path, id string) {
 }
 
 func ObterAtividade(search_path, id string) Atividade {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	atividade, err := db.Query("select id, assunto, tipo, data_vencimento, status, descricao, data_criacao from atividade where id=$1", id)
@@ -74,6 +92,12 @@ func ObterAtividade(search_path, id string) Atividade {
 }
 
 func AtualizarAtividade(search_path, assunto, tipo, status, descricao string, dataVencimento time.Time, id int) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	atividadeAtualizada, err := db.Prepare("update atividade set assunto=$1, tipo=$2, data_vencimento=$3, status=$4, descricao=$5 where id=$6")

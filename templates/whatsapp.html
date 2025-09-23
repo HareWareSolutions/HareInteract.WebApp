@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HareInteract</title>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <link rel="stylesheet" href="/static/styles/menu.css">
+  <link rel="stylesheet" href="/static/styles/dashboard.css">
+
+  <script type="module">
+    import 'https://unpkg.com/@material/web/textfield/filled-text-field.js?module';
+    import 'https://unpkg.com/@material/web/checkbox/checkbox.js?module';
+    import 'https://unpkg.com/@material/web/button/filled-button.js?module';
+  </script>
+</head>
+
+<body>
+{{template "menu.html"}}
+
+<div class="main-content">
+  <h1>Ambiente de Integração WhatsApp</h1>
+
+  {{if .error}}
+  <div style="color: red; margin-bottom: 20px;">
+    <p>Ocorreu um erro: {{.error}}</p>
+  </div>
+  {{end}}
+
+  {{if .hasInstance}}
+
+  {{if .isConnected}}
+  <div class="status-container connected">
+    <span class="material-symbols-outlined">check_circle</span>
+    <p>🎉 Sua instância do WhatsApp está conectada!</p>
+  </div>
+  {{else}}
+
+  <div class="status-container disconnected">
+    <span class="material-symbols-outlined">link_off</span>
+    <p>Sua instância está ativa, mas desconectada.</p>
+    <p>Para conectar, escaneie o QR Code abaixo com o seu celular.</p>
+    <div class="qrcode-container">
+      <img id="qrcode-image" alt="QR Code para conectar o WhatsApp" style="width: 250px; height: 250px;"/>
+    </div>
+  </div>
+  {{end}}
+  {{else}}
+
+  <div class="create-instance-container">
+    <p>Você ainda não tem uma instância de WhatsApp configurada. Crie uma para começar a usar!</p>
+    <form action="/whatsapp/criarInstancia" method="POST">
+      <label for="instanceName">Nome da Instância:</label>
+      <md-filled-text-field name="instanceName" label="Nome único para a instância" required></md-filled-text-field>
+      <md-filled-button type="submit">Criar Instância</md-filled-button>
+    </form>
+  </div>
+  {{end}}
+</div>
+
+<style>
+  .status-container {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+  }
+  .status-container.connected {
+    background-color: #e8f5e9; /* Green-ish background */
+    color: #388e3c; /* Dark green text */
+  }
+  .status-container.disconnected {
+    background-color: #fffde7; /* Yellow-ish background */
+    color: #fbc02d; /* Dark yellow text */
+  }
+  .status-container .material-symbols-outlined {
+    font-size: 48px;
+  }
+  .create-instance-container {
+    text-align: center;
+    padding: 20px;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    margin-top: 20px;
+  }
+  .qrcode-container {
+    margin-top: 20px;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const qrCodeImage = document.getElementById('qrcode-image');
+
+    function fetchAndDisplayQrCode() {
+      fetch('/whatsapp/qrcode')
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Erro na resposta da API');
+                }
+                return response.json();
+              })
+              .then(data => {
+                const base64Data = data.qrcode;
+                if (base64Data) {
+                  // AQUI: Define o src da imagem com o prefixo 'data:'
+                  qrCodeImage.src = 'data:image/png;base64,' + base64Data;
+                } else {
+                  console.error('Dados de QR Code não encontrados na resposta.');
+                  qrCodeImage.src = '';
+                }
+              })
+              .catch(error => {
+                console.error('Erro ao buscar o QR Code:', error);
+                qrCodeImage.alt = 'Não foi possível carregar o QR Code.';
+              });
+    }
+
+    fetchAndDisplayQrCode();
+    setInterval(fetchAndDisplayQrCode, 20000);
+  });
+</script>
+</body>
+</html>

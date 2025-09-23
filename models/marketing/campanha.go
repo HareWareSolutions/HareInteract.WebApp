@@ -17,6 +17,12 @@ type Campanha struct {
 }
 
 func CriarCampanha(search_path, nome, tipo, status string, dataInicio, dataFim time.Time, orcamento float64, responsavel int) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	cadastrarCampanha, err := db.Prepare("insert into campanha(nome, tipo, dataInicio, dataFim, orcamento, status, responsavel) values($1, $2, $3, $4, $5, $6, $7)")
@@ -29,6 +35,12 @@ func CriarCampanha(search_path, nome, tipo, status string, dataInicio, dataFim t
 }
 
 func DeletaCampanha(search_path, id string) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	deletarCampanha, err := db.Prepare("delete from campanha where id=$1")
@@ -41,6 +53,12 @@ func DeletaCampanha(search_path, id string) {
 }
 
 func ObterCampanha(search_path, id string) Campanha {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	campanha, err := db.Query("select * from campanha where id=$1", id)
@@ -75,6 +93,12 @@ func ObterCampanha(search_path, id string) Campanha {
 }
 
 func AtualizarCampanha(search_path string, id, responsavel int, nome, tipo, status string, dataInicio, dataFim time.Time, orcamento float64) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	campanhaAtualizada, err := db.Prepare("update campanha set nome=$1, tipo=$2, dataInicio=$3, dataFim=$4, orcamento=$5, status=$6, responsavel=$7 where id=$8")

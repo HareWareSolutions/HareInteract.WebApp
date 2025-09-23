@@ -14,6 +14,12 @@ type CampanhaMembros struct {
 }
 
 func CriarCampanhaMembros(search_path, statusResposta string, campanha, lead, contato int) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	incluirCampanhaMembros, err := db.Prepare("insert into campanhaMembros")
@@ -26,6 +32,12 @@ func CriarCampanhaMembros(search_path, statusResposta string, campanha, lead, co
 }
 
 func DeletaCampanhaMembros(search_path, id string) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	deletarCampanhaMembros, err := db.Prepare("delete * from campanhaMembros where id=$1")
@@ -38,6 +50,12 @@ func DeletaCampanhaMembros(search_path, id string) {
 }
 
 func ObterCampanhaMembros(search_path, id string) CampanhaMembros {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	campanhaMembros, err := db.Query("select * from campanhaMembros where id=$1", id)
@@ -67,6 +85,12 @@ func ObterCampanhaMembros(search_path, id string) CampanhaMembros {
 }
 
 func AtualizarCampanhaMembros(search_path, statusResposta string, id, campanha, lead, contato int) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	campanhaMembrosAtualizada, err := db.Prepare("update campanhaMembros set campanha=$1, lead=$2, contato=$3, statusResposta=$4 where id=$5")

@@ -18,6 +18,12 @@ type Ticket struct {
 }
 
 func CriarTicket(search_path, assunto, descricao, contato, status, prioridade string, responsavel int) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	dataAbertura := time.Now()
@@ -32,6 +38,12 @@ func CriarTicket(search_path, assunto, descricao, contato, status, prioridade st
 }
 
 func DeletaTicket(search_path, id string) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	deletarTicket, err := db.Prepare("delete from ticket where id=$1")
@@ -44,6 +56,12 @@ func DeletaTicket(search_path, id string) {
 }
 
 func ObterTicket(search_path, id string) Ticket {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	ticket, err := db.Query("select id, assunto, descricao, contato, status, prioridade, responsavel, dataAbertura, dataFechamento from ticket where id=$1", id)
@@ -79,6 +97,12 @@ func ObterTicket(search_path, id string) Ticket {
 }
 
 func AtualizarTicket(search_path, assunto, descricao, contato, status, prioridade string, responsavel int, dataFechamento *time.Time, id int) {
+
+	firstChar := search_path[0]
+	if firstChar >= '0' && firstChar <= '9' {
+		search_path = "C" + search_path
+	}
+
 	db := db.ConectaBD(search_path)
 
 	ticketAtualizado, err := db.Prepare("update ticket set assunto=$1, descricao=$2, contato=$3, status=$4, prioridade=$5, responsavel=$6, dataFechamento=$7 where id=$8")
