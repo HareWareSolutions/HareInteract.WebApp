@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"HareInteract.WebApp/models/IAM"
 	"log"
 	"net/http"
 	"strconv"
+
+	"HareInteract.WebApp/models/IAM"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {

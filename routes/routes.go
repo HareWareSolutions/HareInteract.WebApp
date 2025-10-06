@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"HareInteract.WebApp/controllers"
 	"net/http"
+
+	"HareInteract.WebApp/controllers"
 )
 
 func CarregaRotas() {
@@ -19,6 +20,9 @@ func CarregaRotas() {
 	http.HandleFunc("/timeline", controllers.AuthMiddleware(controllers.TimelineHandler))
 	http.HandleFunc("/integracoes", controllers.AuthMiddleware(controllers.IntegracoesHandler))
 	http.HandleFunc("/configuracoes", controllers.AuthMiddleware(controllers.ConfiguracoesHandler))
+
+	http.HandleFunc("/contatos", controllers.AuthMiddleware(controllers.ContatosHandler))
+	http.HandleFunc("/empresas", controllers.AuthMiddleware(controllers.EmpresasHandler))
 
 	http.HandleFunc("/whatsapp", controllers.AuthMiddleware(controllers.WhatsAppHandler))
 	http.HandleFunc("/whatsapp/criarInstancia", controllers.AuthMiddleware(controllers.CriarInstanciaHandler))
