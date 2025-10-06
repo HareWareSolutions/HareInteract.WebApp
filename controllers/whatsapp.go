@@ -106,22 +106,19 @@ func QrCodeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// AQUI: A API retorna uma string Base64, então 'qrCodeImage' será uma string.
 	qrCodeBase64, err := services.GetZAPIApiQrCode(credencial.TokenApi, credencial.InstanceApi)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Erro ao obter o QR Code: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// Prepara a resposta JSON
-	response := map[string]string{"qrcode": string(qrCodeBase64)}
+	response := map[string]string{"qrCode": qrCodeBase64}
 	responseJSON, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, "Erro ao serializar a resposta JSON", http.StatusInternalServerError)
 		return
 	}
 
-	// Envia a resposta como JSON
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(responseJSON)
 }
