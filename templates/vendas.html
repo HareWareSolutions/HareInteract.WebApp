@@ -20,6 +20,27 @@
 <body>
 {{template "menu.html"}}
 
+<div class="main-content">
+  <h1>Vendas</h1>
+
+  <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Pesquisar..." class="search-input">
+        <span class="material-symbols-outlined search-icon">search</span>
+  </div>
+
+  <div class="cards-grid" id="cardsGrid">
+    <a href="/leads" class="card" data-title="Lead">
+      <span class="material-symbols-outlined icon">person_add</span>
+      <p>Leads</p>
+    </a>
+    
+    <a href="/oportunidades" class="card" data-title="Oprtunidade">
+      <span class="material-symbols-outlined icon">attach_money</span>
+      <p>Oportunidades</p>
+    </a>
+  </div>
+</div>
+
 <script src="/static/scripts/dashboard.js"></script>
 </body>
 </html>

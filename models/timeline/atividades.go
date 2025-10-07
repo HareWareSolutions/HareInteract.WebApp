@@ -1,8 +1,9 @@
 package timeline
 
 import (
-	"HareInteract.WebApp/db"
 	"time"
+
+	"HareInteract.WebApp/db"
 )
 
 type Atividade struct {

@@ -1,11 +1,8 @@
 package controllers
 
-import (
-	"net/http"
-)
+import "net/http"
 
-// Redireciona para página de Contatos
-func ContatosHandler(w http.ResponseWriter, r *http.Request) {
+func CampanhaHandler(w http.ResponseWriter, r *http.Request) {
 	searchPath, ok := r.Context().Value(orgCpfCnpjKey).(string)
 
 	if !ok {
@@ -16,11 +13,11 @@ func ContatosHandler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
 		"searchPath": searchPath,
 	}
-	templates.ExecuteTemplate(w, "contatos.html", data)
+
+	templates.ExecuteTemplate(w, "campanha.html", data)
 }
 
-// Redireciona para página de Empresas
-func EmpresasHandler(w http.ResponseWriter, r *http.Request) {
+func CampanhaMembrosHandler(w http.ResponseWriter, r *http.Request) {
 	searchPath, ok := r.Context().Value(orgCpfCnpjKey).(string)
 
 	if !ok {
@@ -31,5 +28,6 @@ func EmpresasHandler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
 		"searchPath": searchPath,
 	}
-	templates.ExecuteTemplate(w, "empresas.html", data)
+
+	templates.ExecuteTemplate(w, "campanhaMembros.html", data)
 }
