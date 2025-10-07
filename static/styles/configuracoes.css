@@ -1,0 +1,135 @@
+:root { /* Root serve para deixar os campos padrões material nas cores do sistema */
+    --primary-color: #04c0e2;
+
+    /* Material Web cores principais */
+    --md-sys-color-primary: var(--primary-color);
+    --md-sys-color-on-primary: #ffffff;
+
+    /* Botões */
+    --md-filled-button-container-color: var(--primary-color);
+    --md-filled-button-label-text-color: #ffffff;
+
+    /* Campos de texto */
+    --md-filled-text-field-container-color: #e6f9fc; /* fundo normal */
+    --md-filled-text-field-focus-container-color: #d4f6fb; /* fundo no foco */
+    --md-filled-text-field-focus-active-indicator-color: var(--primary-color);
+    --md-filled-text-field-focus-label-text-color: var(--primary-color);
+    --md-filled-text-field-input-text-color: #000000;
+
+    /* Checkbox */
+    --md-checkbox-selected-container-color: var(--primary-color);
+    --md-checkbox-selected-icon-color: #ffffff;
+}
+
+/* Settings Page Layout */
+.main-content {
+    flex-grow: 1;
+    padding: 32px;
+}
+
+.settings-layout {
+    display: flex;
+    gap: 32px; /* Espaçamento entre o menu e o conteúdo */
+    max-width: 1200px;
+    margin-top: 24px;
+    background-color: var(--surface-color); /* Fundo claro para o container */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    min-height: 70vh; /* Altura mínima para o layout de configurações */
+}
+
+/* Sidebar Navigation Styles */
+.settings-sidebar {
+    width: 250px;
+    min-width: 200px;
+    padding: 16px 0;
+    border-right: 1px solid var(--outline-color); /* Linha divisória sutil */
+    background-color: var(--surface-container-low); /* Cor de fundo sutil para o menu */
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 12px 24px;
+    margin: 4px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--on-surface-variant);
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+}
+
+.nav-item:hover:not(.active) {
+    background-color: var(--surface-container-high);
+}
+
+.nav-item.active {
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+    font-weight: 600;
+    border-left: 4px solid var(--primary-color);
+}
+
+.nav-item .icon {
+    font-size: 24px;
+}
+
+/* Estilo específico para o item de Logout */
+.nav-item.logout {
+    margin-top: auto; /* Empurra para o final da sidebar */
+    color: var(--error-color);
+}
+.nav-item.logout:hover {
+    background-color: var(--error-container);
+    color: var(--on-error-container);
+}
+
+/* Content Area Styles */
+.settings-content {
+    flex-grow: 1;
+    padding: 32px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h2 {
+    color: var(--on-surface-color);
+    margin-top: 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--outline-color);
+    margin-bottom: 24px;
+}
+
+/* Estilo Específico para o formulário de Perfil */
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Espaçamento entre os campos */
+    max-width: 500px; /* Limita a largura do formulário para melhor leitura */
+}
+
+/* Garante que os campos de texto do Material Web se adaptem ao layout */
+.profile-form md-filled-text-field {
+    width: 100%;
+}
+
+/* Estilo para o botão no formulário */
+.profile-form md-filled-button {
+    align-self: flex-start; /* Alinha o botão à esquerda, abaixo dos campos */
+    margin-top: 12px;
+}

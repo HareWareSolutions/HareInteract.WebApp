@@ -1,10 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HareInteract - Configurações</title>
 
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <link rel="stylesheet" href="/static/styles/menu.css">
+  <link rel="stylesheet" href="/static/styles/configuracoes.css">
+
+  <script type="module">
+    import 'https://unpkg.com/@material/web/textfield/filled-text-field.js?module';
+    import 'https://unpkg.com/@material/web/button/filled-button.js?module';
+  </script>
+</head>
+
+<body>
+{{template "menu.html"}}
+
+<div class="main-content">
+  <h1>Configurações</h1>
+
+  <div class="settings-layout">
+    <nav class="settings-sidebar">
+      <button class="nav-item active" data-tab="perfil">
+        <span class="material-symbols-outlined icon">person</span>
+        Perfil
+      </button>
+      <button class="nav-item" data-tab="organizacao">
+        <span class="material-symbols-outlined icon">corporate_fare</span>
+        Organização
+      </button>
+      <button class="nav-item" data-tab="mensagens">
+        <span class="material-symbols-outlined icon">chat</span>
+        Mensagens
+      </button>
+      <button class="nav-item" data-tab="usuarios">
+        <span class="material-symbols-outlined icon">group</span>
+        Usuários
+      </button>
+      <button class="nav-item logout" data-tab="logout">
+        <span class="material-symbols-outlined icon">logout</span>
+        Logout
+      </button>
+    </nav>
+
+    <div class="settings-content">
+      <div id="perfil" class="tab-content active">
+        <h2>Perfil</h2>
+        <p>Gerencie suas informações pessoais, credenciais de acesso e visualize seu status de conta.</p>
+
+        <div class="profile-form">
+          <md-filled-text-field label="Nome Completo" value="João da Silva"></md-filled-text-field>
+
+          <md-filled-text-field label="Email" value="joao@hareinteract.com" type="email"></md-filled-text-field>
+
+          <md-filled-text-field label="Username" value="joaosilva_hi"></md-filled-text-field>
+
+          <md-filled-text-field label="Senha" type="password" value="********"></md-filled-text-field>
+
+          <md-filled-button>Salvar Alterações</md-filled-button>
+        </div>
+      </div>
+
+      <div id="organizacao" class="tab-content">
+        <h2>Organização</h2>
+        <p>Configure as informações e preferências da sua empresa.</p>
+      </div>
+
+      <div id="mensagens" class="tab-content">
+        <h2>Mensagens</h2>
+        <p>Ajuste as configurações de notificação e modelos de mensagens.</p>
+      </div>
+
+      <div id="usuarios" class="tab-content">
+        <h2>Usuários</h2>
+        <p>Gerencie os membros da sua equipe e seus níveis de acesso.</p>
+      </div>
+
+      <div id="logout" class="tab-content">
+        <h2>Sair da Conta</h2>
+        <p>Clique no botão abaixo para encerrar sua sessão.</p>
+        <md-filled-button onclick="alert('Fazendo logout...')">Confirmar Logout</md-filled-button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/scripts/configuracoes.js"></script>
+<script src="/static/scripts/dashboard.js"></script>
 </body>
 </html>
