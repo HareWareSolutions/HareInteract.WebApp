@@ -1,0 +1,50 @@
+:root { /* Root serve para deixar os campos padrões material nas cores do sistema */
+    --primary-color: #04c0e2;
+
+    /* Material Web cores principais */
+    --md-sys-color-primary: var(--primary-color);
+    --md-sys-color-on-primary: #ffffff;
+
+    /* Botões */
+    --md-filled-button-container-color: var(--primary-color);
+    --md-filled-button-label-text-color: #ffffff;
+
+    /* Campos de texto */
+    --md-filled-text-field-container-color: #e6f9fc; /* fundo normal */
+    --md-filled-text-field-focus-container-color: #d4f6fb; /* fundo no foco */
+    --md-filled-text-field-focus-active-indicator-color: var(--primary-color);
+    --md-filled-text-field-focus-label-text-color: var(--primary-color);
+    --md-filled-text-field-input-text-color: #000000;
+
+    /* Checkbox */
+    --md-checkbox-selected-container-color: var(--primary-color);
+    --md-checkbox-selected-icon-color: #ffffff;
+}
+
+.status-container {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.status-container.connected {
+    background-color: #d4f2f9;
+    color: var(--primary-color);
+}
+.status-container.disconnected {
+    background-color: #d4f2f9;
+    color: var(--primary-color);
+}
+.status-container .material-symbols-outlined {
+    font-size: 48px;
+}
+.create-instance-container {
+    text-align: center;
+    padding: 20px;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.qrcode-container {
+    margin-top: 20px;
+}

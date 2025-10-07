@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <link rel="stylesheet" href="/static/styles/menu.css">
   <link rel="stylesheet" href="/static/styles/dashboard.css">
+  <link rel="stylesheet" href="/static/styles/whatsapp.css">
+
 
   <script type="module">
     import 'https://unpkg.com/@material/web/textfield/filled-text-field.js?module';
@@ -16,36 +18,8 @@
     import 'https://unpkg.com/@material/web/button/filled-button.js?module';
   </script>
 
+  <script src="/static/scripts/whatsapp-qrcode.js"></script>
 
-  <style>
-    .status-container {
-      text-align: center;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-    .status-container.connected {
-      background-color: #e8f5e9; /* Fundo esverdeado */
-      color: #388e3c; /* Texto verde escuro */
-    }
-    .status-container.disconnected {
-      background-color: #fffde7; /* Fundo amarelado */
-      color: #fbc02d; /* Texto amarelo escuro */
-    }
-    .status-container .material-symbols-outlined {
-      font-size: 48px;
-    }
-    .create-instance-container {
-      text-align: center;
-      padding: 20px;
-      border: 1px dashed #ccc;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-    .qrcode-container {
-      margin-top: 20px;
-    }
-  </style>
 </head>
 
 <body>
@@ -90,39 +64,6 @@
   </div>
   {{end}}
 </div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const qrCodeImage = document.getElementById('qrcode-image');
 
-    function fetchAndDisplayQrCode() {
-      fetch('/whatsapp/qrcode')
-              .then(response => {
-                if (!response.ok) {
-                  throw new Error(`Erro HTTP: ${response.status}`);
-                }
-                return response.json();
-              })
-              .then(data => {
-
-                const base64Data = data.qrCode;
-                console.log(base64Data)
-
-                if (base64Data) {
-                  qrCodeImage.src = base64Data;
-
-                  qrCodeImage.alt = 'QR Code para login do WhatsApp';
-                } else {
-                  qrCodeImage.alt = 'Dados do QR Code não encontrados.';
-                }
-              })
-              .catch(error => {
-                qrCodeImage.alt = 'Não foi possível carregar o QR Code.';
-              });
-    }
-
-    fetchAndDisplayQrCode();
-    setInterval(fetchAndDisplayQrCode, 20000);
-  });
-</script>
 </body>
 </html>
