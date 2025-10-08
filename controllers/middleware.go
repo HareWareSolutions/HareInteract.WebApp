@@ -10,7 +10,10 @@ import (
 // Defina uma chave para o context. É uma boa prática usar um tipo customizado.
 type contextKey string
 
-const orgCpfCnpjKey contextKey = "orgCpfCnpj"
+const (
+	orgCpfCnpjKey contextKey = "orgCpfCnpj"
+	userIdKey     contextKey = "userID"
+)
 
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -35,8 +38,15 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		userID, ok := session.Values["userId"].(int)
+		if !ok {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+
 		// Criar um novo contexto com o valor do CPF/CNPJ
 		ctx := context.WithValue(r.Context(), orgCpfCnpjKey, orgCpfCnpj)
+		ctx = context.WithValue(ctx, userIdKey, userID)
 
 		// Chamar o próximo handler com o novo contexto
 		next.ServeHTTP(w, r.WithContext(ctx))

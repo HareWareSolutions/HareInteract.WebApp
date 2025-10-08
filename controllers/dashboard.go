@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -103,8 +104,19 @@ func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, err := PerfilConfigHandler(r)
+
+	fmt.Println(user)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
 	data := map[string]interface{}{
 		"searchPath": searchPath,
+		"user":       user,
 	}
+
 	templates.ExecuteTemplate(w, "configuracoes.html", data)
 }

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"HareInteract.WebApp/routes"
 	"net/http"
+
+	"HareInteract.WebApp/routes"
 )
 
 func main() {

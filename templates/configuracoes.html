@@ -52,13 +52,13 @@
         <p>Gerencie suas informações pessoais, credenciais de acesso e visualize seu status de conta.</p>
 
         <div class="profile-form">
-          <md-filled-text-field label="Nome Completo" value="João da Silva"></md-filled-text-field>
+          <md-filled-text-field label="Nome Completo" value="{{ .user.Nome }}"></md-filled-text-field>
 
-          <md-filled-text-field label="Email" value="joao@hareinteract.com" type="email"></md-filled-text-field>
+          <md-filled-text-field label="Email" type="email" value="{{ .user.Email }}"></md-filled-text-field>
 
-          <md-filled-text-field label="Username" value="joaosilva_hi"></md-filled-text-field>
+          <md-filled-text-field label="Username" value="{{ .user.Username }}"></md-filled-text-field>
 
-          <md-filled-text-field label="Senha" type="password" value="********"></md-filled-text-field>
+          <md-filled-text-field label="Senha" type="password" value="{{ .user.Senha }}"></md-filled-text-field>
 
           <md-filled-button>Salvar Alterações</md-filled-button>
         </div>
