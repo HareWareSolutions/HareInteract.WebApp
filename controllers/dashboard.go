@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -105,8 +104,6 @@ func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := PerfilConfigHandler(r)
-
-	fmt.Println(user)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)

@@ -19,4 +19,17 @@ func PerfilConfigHandler(r *http.Request) (IAM.Usuario, error) {
 	return data, nil
 }
 
-//func PerfilAtualizacaoHandler() {}
+func PerfilConfigAtualizarHandler(w http.ResponseWriter, r *http.Request) {
+
+	user := IAM.Usuario{}
+
+	user.Id = r.Context().Value(userIdKey).(int)
+	user.Nome = r.FormValue("nome")
+	user.Email = r.FormValue("email")
+	user.Username = r.FormValue("username")
+	user.Senha = r.FormValue("senha")
+
+	IAM.AtualizarUsuario(user.Id, user.Nome, user.Email, user.Username, user.Senha, true)
+
+	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
+}

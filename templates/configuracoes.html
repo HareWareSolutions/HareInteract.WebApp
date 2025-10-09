@@ -19,7 +19,6 @@
 <body>
 {{template "menu.html"}}
 
-<div class="main-content">
   <h1>Configurações</h1>
 
   <div class="settings-layout">
@@ -50,18 +49,19 @@
       <div id="perfil" class="tab-content active">
         <h2>Perfil</h2>
         <p>Gerencie suas informações pessoais, credenciais de acesso e visualize seu status de conta.</p>
+        <form action="/configuracoes/atualizar" method="POST">
+          <div class="profile-form">
+            <md-filled-text-field label="Nome Completo" name="nome" value="{{ .user.Nome }}"></md-filled-text-field>
 
-        <div class="profile-form">
-          <md-filled-text-field label="Nome Completo" value="{{ .user.Nome }}"></md-filled-text-field>
+            <md-filled-text-field label="Email" name="email" type="email" value="{{ .user.Email }}"></md-filled-text-field>
 
-          <md-filled-text-field label="Email" type="email" value="{{ .user.Email }}"></md-filled-text-field>
+            <md-filled-text-field label="Username" name="username" value="{{ .user.Username }}"></md-filled-text-field>
 
-          <md-filled-text-field label="Username" value="{{ .user.Username }}"></md-filled-text-field>
+            <md-filled-text-field label="Senha" name="senha" type="password" value="{{ .user.Senha }}"></md-filled-text-field>
 
-          <md-filled-text-field label="Senha" type="password" value="{{ .user.Senha }}"></md-filled-text-field>
-
-          <md-filled-button>Salvar Alterações</md-filled-button>
-        </div>
+            <md-filled-button type="submit">Salvar Alterações</md-filled-button>
+          </div>
+        </form>
       </div>
 
       <div id="organizacao" class="tab-content">
@@ -87,7 +87,6 @@
     </div>
   </div>
 </div>
-
 <script src="/static/scripts/configuracoes.js"></script>
 <script src="/static/scripts/dashboard.js"></script>
 </body>

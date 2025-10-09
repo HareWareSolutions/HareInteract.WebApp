@@ -20,6 +20,7 @@ func CarregaRotas() {
 	http.HandleFunc("/timeline", controllers.AuthMiddleware(controllers.TimelineHandler))
 	http.HandleFunc("/integracoes", controllers.AuthMiddleware(controllers.IntegracoesHandler))
 	http.HandleFunc("/configuracoes", controllers.AuthMiddleware(controllers.ConfiguracoesHandler))
+	http.HandleFunc("/configuracoes/atualizar", controllers.AuthMiddleware(controllers.PerfilConfigAtualizarHandler))
 	http.HandleFunc("/contatos", controllers.AuthMiddleware(controllers.ContatosHandler))
 	http.HandleFunc("/empresas", controllers.AuthMiddleware(controllers.EmpresasHandler))
 	http.HandleFunc("/atividades", controllers.AuthMiddleware(controllers.AtividadesHandler))

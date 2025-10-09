@@ -15,4 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(tabId).classList.add('active');
         });
     });
+
+
+     
 });
