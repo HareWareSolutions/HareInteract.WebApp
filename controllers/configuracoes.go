@@ -45,3 +45,9 @@ func PerfilConfigExcluirHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+func MensagemCarregaHandler() []IAM.Mensagem {
+	data := IAM.ObterMensagens()
+
+	return data
+}

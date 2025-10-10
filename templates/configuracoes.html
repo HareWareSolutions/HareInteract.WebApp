@@ -76,6 +76,20 @@
       <div id="mensagens" class="tab-content">
         <h2>Mensagens</h2>
         <p>Ajuste as configurações de notificação e modelos de mensagens.</p>
+        <table>
+          <th>Nº Mensagem</th>
+          <th>Mensagem</th>
+          <th>Data Recebimento</th>
+
+          {{ range .mensagem }}
+            <tr>
+              <td>.Mensagem_conteudo</td>
+              <td>.Data_envio</td>
+              <td>.Status</td>
+            </tr>
+          {{ end }}
+
+        </table>
       </div>
 
       <div id="usuarios" class="tab-content">

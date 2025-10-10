@@ -110,9 +110,12 @@ func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	mensagens := MensagemCarregaHandler()
+
 	data := map[string]interface{}{
 		"searchPath": searchPath,
 		"user":       user,
+		"mensagem":   mensagens,
 	}
 
 	templates.ExecuteTemplate(w, "configuracoes.html", data)

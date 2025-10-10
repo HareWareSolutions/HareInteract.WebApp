@@ -3,8 +3,9 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
 	"log"
+
+	_ "github.com/lib/pq"
 )
 
 func ConectaBD(search_path string) *sql.DB {
@@ -200,6 +201,18 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            data_abertura TIMESTAMP NOT NULL,
            data_fechamento TIMESTAMP
         );`, schemaPrefix, schemaPrefix, schemaPrefix),
+
+		// Tabela de Mensagens
+		fmt.Sprintf(`
+         CREATE TABLE IF NOT EXISTS %smensagens(
+            id SERIAL PRIMARY KEY,
+            id_remetente INTEGER NOT NULL REFERENCES %susuario(id),
+            id_destinatario INTEGER NOT NULL REFERENCES %susuario(id),
+            conteudo_mensagem VARCHAR(1000) NOT NULL,
+            data_envio TIMESTAMP NOT NULL,
+            status BOOLEAN NOT NULL,
+            urgencia VARCHAR(10)
+         );`, schemaPrefix, schemaPrefix, schemaPrefix),
 	}
 
 	// Executa cada instrução de criação de tabela

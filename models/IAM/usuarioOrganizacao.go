@@ -1,8 +1,9 @@
 package IAM
 
 import (
-	"HareInteract.WebApp/db"
 	"time"
+
+	"HareInteract.WebApp/db"
 )
 
 type UsuarioOrganizacao struct {
@@ -70,18 +71,13 @@ func ObterUsuarioOrganizacaoPorUsuario(usuarioId int) UsuarioOrganizacao {
 
 	row := db.QueryRow("select id, usuario, organizacao, nivel_acesso from usuario_organizacao where usuario = $1", usuarioId)
 
-	var id_db, usuario_db, organizacao_db int
-	var nivelAcesso_db string
-
-	err := row.Scan(&id_db, &usuario_db, &organizacao_db, &nivelAcesso_db)
+	err := row.Scan(&usuarioOrganizacaoRecuperado.Id,
+		&usuarioOrganizacaoRecuperado.Usuario,
+		&usuarioOrganizacaoRecuperado.Organizacao,
+		&usuarioOrganizacaoRecuperado.NivelAcesso)
 	if err != nil {
 		panic(err.Error())
 	}
-
-	usuarioOrganizacaoRecuperado.Id = id_db
-	usuarioOrganizacaoRecuperado.Usuario = usuario_db
-	usuarioOrganizacaoRecuperado.Organizacao = organizacao_db
-	usuarioOrganizacaoRecuperado.NivelAcesso = nivelAcesso_db
 
 	defer db.Close()
 	return usuarioOrganizacaoRecuperado
