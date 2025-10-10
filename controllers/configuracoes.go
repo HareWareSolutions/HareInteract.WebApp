@@ -33,3 +33,15 @@ func PerfilConfigAtualizarHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
+
+func PerfilConfigExcluirHandler(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value(userIdKey).(int)
+
+	user := IAM.ObterUsuario(strconv.Itoa(userId))
+
+	user.Ativo = false
+
+	IAM.AtualizarUsuario(user.Id, user.Nome, user.Email, user.Username, user.Senha, user.Ativo)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}

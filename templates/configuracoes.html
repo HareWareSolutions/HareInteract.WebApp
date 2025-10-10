@@ -48,9 +48,10 @@
     <div class="settings-content">
       <div id="perfil" class="tab-content active">
         <h2>Perfil</h2>
-        <p>Gerencie suas informações pessoais, credenciais de acesso e visualize seu status de conta.</p>
-        <form action="/configuracoes/atualizar" method="POST">
-          <div class="profile-form">
+        <div class="profile-form">
+          <p>Gerencie suas informações pessoais, credenciais de acesso e visualize seu status de conta.</p>
+          <form action="/configuracoes/atualizar" method="POST" onsubmit="return confirm('Tem certeza que deseja atualizar seu perfil com os dados informados?')">
+            
             <md-filled-text-field label="Nome Completo" name="nome" value="{{ .user.Nome }}"></md-filled-text-field>
 
             <md-filled-text-field label="Email" name="email" type="email" value="{{ .user.Email }}"></md-filled-text-field>
@@ -60,8 +61,11 @@
             <md-filled-text-field label="Senha" name="senha" type="password" value="{{ .user.Senha }}"></md-filled-text-field>
 
             <md-filled-button type="submit">Salvar Alterações</md-filled-button>
-          </div>
-        </form>
+          </form> 
+          <form action="/configuracoes/excluir" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir seu perfil?')">
+            <md-filled-button type="submit" class="negative-button">Excluir Perfil</md-filled-button>
+          </form>
+        </div>
       </div>
 
       <div id="organizacao" class="tab-content">
