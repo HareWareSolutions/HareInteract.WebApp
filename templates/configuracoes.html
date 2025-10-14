@@ -7,12 +7,14 @@
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
   <link rel="stylesheet" href="/static/styles/menu.css">
   <link rel="stylesheet" href="/static/styles/configuracoes.css">
 
   <script type="module">
     import 'https://unpkg.com/@material/web/textfield/filled-text-field.js?module';
     import 'https://unpkg.com/@material/web/button/filled-button.js?module';
+    import 'https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js';
   </script>
 </head>
 
@@ -76,19 +78,23 @@
       <div id="mensagens" class="tab-content">
         <h2>Mensagens</h2>
         <p>Ajuste as configurações de notificação e modelos de mensagens.</p>
-        <table>
-          <th>Nº Mensagem</th>
-          <th>Mensagem</th>
-          <th>Data Recebimento</th>
-
-          {{ range .mensagem }}
-            <tr>
-              <td>.Mensagem_conteudo</td>
-              <td>.Data_envio</td>
-              <td>.Status</td>
+        <table class="mds-data-table__table">
+          <thead>
+            <tr class="mdc-data-table__header-row">
+              <th class="mdc-data-table__header-cell mdc-data-table__header-cell--non-numeric" role="columnheader">Conteúdo</th>
+              <th class="mdc-data-table__header-cell" role="columnheader">Data</th>
+              <th class="mdc-data-table__header-cell" role="columnheader">Visualizado</th>
             </tr>
-          {{ end }}
-
+          </thead>
+          <tbody class="mdc-data-table__content">
+            {{ range .mensagem }}
+              <tr class="mdc-data-table__content">
+                <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .Mensagem_conteudo }}</td>
+                <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .Data_envio.Format("02/01/2006") }}</td>
+                <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .Status }}</td>
+              </tr>
+            {{ end }}
+          </tbody>
         </table>
       </div>
 

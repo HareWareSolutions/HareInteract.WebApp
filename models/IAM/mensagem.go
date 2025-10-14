@@ -20,7 +20,7 @@ type Mensagem struct {
 func CriarMensagem(id_remetente int, id_destinatario int, mensagem_conteudo string, status bool, urgencia string) {
 	db := db.ConectaBD("public")
 
-	data_envio := time.Now()
+	data_envio := time.Now().Format("02/01/2006")
 
 	inserirMensagem, err := db.Prepare("insert into mensagens(id_remetente, id_destinatario, conteudo_mensagem, data_envio, status, urgencia) values($1, $2, $3, $4, $5, $6)")
 	if err != nil {
@@ -31,7 +31,7 @@ func CriarMensagem(id_remetente int, id_destinatario int, mensagem_conteudo stri
 	defer db.Close()
 }
 
-func DeletaMensagem(id int) {
+func DeletarMensagem(id int) {
 	db := db.ConectaBD("public")
 
 	statement, err := db.Prepare("delete from mensagems where id = $1")
@@ -65,7 +65,6 @@ func ObterMensagens() []Mensagem {
 			log.Printf("Erro escanear linha: ", err)
 			continue
 		}
-
 		mensagens = append(mensagens, m)
 
 		if err = rows.Err(); err != nil {
