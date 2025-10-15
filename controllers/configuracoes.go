@@ -51,3 +51,13 @@ func MensagemCarregaHandler() []IAM.Mensagem {
 
 	return data
 }
+
+func MensagemExcluirHandler(w http.ResponseWriter, r *http.Request) {
+
+	idForm := r.FormValue("id")
+	id, _ := strconv.Atoi(idForm)
+
+	IAM.DeletarMensagem(id)
+
+	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
+}
