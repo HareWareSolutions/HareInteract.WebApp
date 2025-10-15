@@ -73,6 +73,15 @@
       <div id="organizacao" class="tab-content">
         <h2>Organização</h2>
         <p>Configure as informações e preferências da sua empresa.</p>
+        <form>
+          <md-filled-text-field label="Organização" name="nome" value="{{ .organizacao.Nome }}"></md-filled-text-field>
+          <md-filled-text-field label="Responsável" name="responsavel" value="{{ .organizacao.Responsavel }}"></md-filled-text-field>
+          <md-filled-text-field label="CPF/CNPJ" name="documento" value="{{ .organizacao.Cpfcnpj }}"></md-filled-text-field>
+          <md-filled-text-field label="Endereço" name="endereco" value='{{ printf "%s/%s - %s" .organizacao.Cidade .organizacao.Estado .organizacao.Pais }}'></md-filled-text-field><form>
+          <md-filled-text-field label="Telefone" name="telefone" value="{{ .organizacao.Telefone }}"></md-filled-text-field>
+          <md-filled-text-field label="Data Cadastro" name="dt_cadastro" value="{{ .organizacao.DataCadastro }}"></md-filled-text-field>
+        </form>
+        </form>
       </div>
 
       <div id="mensagens" class="tab-content">

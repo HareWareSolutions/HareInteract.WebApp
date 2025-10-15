@@ -61,3 +61,5 @@ func MensagemExcluirHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
+
+func OrganizacaoCarregaHandler()
