@@ -12,6 +12,7 @@ type Mensagem struct {
 	Id_remetente      int
 	Id_destinatario   int
 	Mensagem_conteudo string
+	Tipo_mensagem     byte
 	Data_envio        time.Time
 	Status            bool
 	Urgencia          string
@@ -22,7 +23,7 @@ func CriarMensagem(id_remetente int, id_destinatario int, mensagem_conteudo stri
 
 	data_envio := time.Now().Format("02/01/2006")
 
-	inserirMensagem, err := db.Prepare("insert into mensagens(id_remetente, id_destinatario, conteudo_mensagem, data_envio, status, urgencia) values($1, $2, $3, $4, $5, $6)")
+	inserirMensagem, err := db.Prepare("insert into mensagens(id_remetente, id_destinatario, conteudo_mensagem, status, urgencia, data_envio) values($1, $2, $3, $4, $5, $6)")
 	if err != nil {
 		panic(err.Error())
 	}
