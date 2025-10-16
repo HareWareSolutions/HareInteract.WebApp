@@ -39,6 +39,42 @@ func DeletaUsuario(id string) {
 	defer db.Close()
 }
 
+func ObterUsuarios() []Usuario{
+	db := db.ConectaBD("public")
+
+	statement := "select * from usuario"
+
+	rows, err := db.Query(statement)
+	if err != nil{
+		panic(err.Error())
+	}
+
+	defer rows.Close()
+
+	usuarios := []Usuario{}
+
+	for rows.Next(){
+
+		var u Usuario
+
+		err := rows.Scan(&u.Id, &u.Nome, &u.Email, &u.Username, &u.Senha, &u.Ativo)
+
+		if err != nil{
+			log.Printf("Erro ao scananear linha: ", err)
+			continue
+		}
+
+		usuarios = append(usuarios, u)
+
+		if err = rows.Err(); err != nil{
+			log.Fatal("Erro na iteração das linhas: %v", err)
+		}
+	}
+
+	return usuarios
+
+}
+
 func ObterUsuario(id string) Usuario {
 	db := db.ConectaBD("public")
 

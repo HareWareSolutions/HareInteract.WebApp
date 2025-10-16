@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -114,8 +113,6 @@ func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 	mensagens := MensagemCarregaHandler()
 
 	organizacao := OrganizacaoCarregaHandler(r)
-
-	fmt.Println(organizacao)
 
 	data := map[string]interface{}{
 		"searchPath":  searchPath,

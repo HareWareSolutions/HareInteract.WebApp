@@ -8,6 +8,8 @@ import (
 	"HareInteract.WebApp/models/IAM"
 )
 
+// Handlers de Perfil
+
 func PerfilConfigHandler(r *http.Request) (IAM.Usuario, error) {
 	userID, ok := r.Context().Value(userIdKey).(int)
 
@@ -46,6 +48,8 @@ func PerfilConfigExcluirHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+//Handlers de Mensagem
+
 func MensagemCarregaHandler() []IAM.Mensagem {
 	data := IAM.ObterMensagens()
 
@@ -62,6 +66,8 @@ func MensagemExcluirHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
 
+// Handlers de Organização
+
 func OrganizacaoCarregaHandler(r *http.Request) IAM.Organizacao {
 	userId := r.Context().Value(userIdKey).(int)
 
@@ -70,4 +76,13 @@ func OrganizacaoCarregaHandler(r *http.Request) IAM.Organizacao {
 	org := IAM.ObterOrganizacao(strconv.Itoa(userOrg.Organizacao))
 
 	return org
+}
+
+// Handlers de Usuario
+
+func UsuariosCarregaHandler(r *http.Request) []IAM.UsuarioOrganizacao{
+	userId := r.Context().Value(userIdKey).(int)
+	userOrg := IAM.ObterUsuarioOrganizacaoPorUsuario(userId)
+
+	
 }

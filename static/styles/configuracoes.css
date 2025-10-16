@@ -133,3 +133,33 @@
     align-self: flex-start; /* Alinha o botão à esquerda, abaixo dos campos */
     margin-top: 12px;
 }
+
+/* No arquivo /static/styles/configuracoes.css ou similar */
+
+/* Define a altura máxima e a rolagem para o contêiner da tabela */
+.scrollable-table-container {
+    /* Defina uma altura máxima que acomode o número de linhas desejado */
+    max-height: 400px; /* Exemplo: ajuste este valor para o que for melhor visualmente */
+    overflow-y: auto; /* Adiciona barra de rolagem vertical apenas se o conteúdo exceder max-height */
+    width: 90%; /* Garante que o contêiner ocupe a largura total */
+    /* Você pode adicionar um pouco de estilo, se necessário */
+    border: 1px solid var(--md-sys-color-outline, #ddd); /* Opcional: borda leve */
+    border-radius: 4px; /* Opcional */
+}
+
+/* Garante que o cabeçalho da tabela fique fixo na parte superior */
+.scrollable-table-container table thead {
+    /* Permite que o cabeçalho fique fixo. Necessário para tabelas MDC com rolagem */
+    position: sticky;
+    top: 0;
+    /* Garante que o cabeçalho fique acima do corpo da tabela ao rolar */
+    z-index: 10;
+    /* Garante que o fundo do cabeçalho seja sólido (branco, no caso de um fundo claro) */
+    background-color: var(--md-sys-color-surface, #fff);
+}
+
+/* (Opcional) Ajuste para garantir que as células do cabeçalho fiquem visíveis */
+.scrollable-table-container table thead th {
+    /* Garante que a borda de baixo seja desenhada corretamente */
+    border-bottom: 1px solid var(--md-sys-color-outline-variant, #e0e0e0);
+}

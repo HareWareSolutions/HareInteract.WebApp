@@ -14,6 +14,11 @@ type UsuarioOrganizacao struct {
 	DataCadastro time.Time `json:"dataCadastro"`
 }
 
+type UsuarioOrganizacaoPublico struct{
+	UsuarioOrganizacao
+	Nome string
+}
+
 func CriarUsuarioOrganizacao(usuario, organizacao int, nivelAcesso string) {
 	db := db.ConectaBD("public")
 
@@ -38,6 +43,38 @@ func DeletaUsuarioOrganizacao(usuario int) {
 
 	deletarUsuarioOrganizacao.Exec(usuario)
 	defer db.Close()
+}
+
+func ObterUsuariosOrganizacaoPorIdOrg(id int) []UsuarioOrganizacao{
+	db := db.ConectaBD("public")
+
+	statement := "SELECT * FROM usuario_organizacao WHERE organizacao = $1", id
+
+	rows, err := db.Query(statement)
+	if err != nil{
+		panic(err(Error()))
+	}
+	defer rows.Close()
+
+	usuarios := []UsuarioOrganizacao
+
+	for rows.Next(){
+		var u UsuarioOrganizacao
+
+		err := rows.Scan(&u.Id, &u.Usuario, &u.Organizacao, &u.NivelAcesso, &u.DataCadastro)
+
+		if err != nil {
+			log.Printf("Erro escanear linha: ", err)
+			continue
+		}
+		usuarios = append(usuarios, u)
+
+		if err = rows.Err(); err != nil {
+			log.Fatal("Erro iteração das linhas: %v", err)
+		}
+	}
+
+	return usuarios
 }
 
 func ObterUsuarioOrganizacao(id int) UsuarioOrganizacao {
@@ -93,4 +130,8 @@ func AtualizarUsuarioOrganizacao(id, usuario, organizacao int, nivelAcesso strin
 
 	UsuarioOrganizacaoAtualizada.Exec(usuario, organizacao, nivelAcesso, id)
 	defer db.Close()
+}
+
+func ConverterUsuarioOrgPublico(u UsuarioOrganizacao) UsuarioOrganizacaoPublico{
+	
 }
