@@ -62,4 +62,12 @@ func MensagemExcluirHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
 
-func OrganizacaoCarregaHandler()
+func OrganizacaoCarregaHandler(r *http.Request) IAM.Organizacao {
+	userId := r.Context().Value(userIdKey).(int)
+
+	userOrg := IAM.ObterUsuarioOrganizacaoPorUsuario(userId)
+
+	org := IAM.ObterOrganizacao(strconv.Itoa(userOrg.Organizacao))
+
+	return org
+}

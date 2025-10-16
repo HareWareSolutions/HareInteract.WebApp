@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -112,10 +113,15 @@ func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 
 	mensagens := MensagemCarregaHandler()
 
+	organizacao := OrganizacaoCarregaHandler(r)
+
+	fmt.Println(organizacao)
+
 	data := map[string]interface{}{
-		"searchPath": searchPath,
-		"user":       user,
-		"mensagem":   mensagens,
+		"searchPath":  searchPath,
+		"user":        user,
+		"mensagem":    mensagens,
+		"organizacao": organizacao,
 	}
 
 	templates.ExecuteTemplate(w, "configuracoes.html", data)

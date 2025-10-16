@@ -74,13 +74,11 @@
         <h2>Organização</h2>
         <p>Configure as informações e preferências da sua empresa.</p>
         <form>
-          <md-filled-text-field label="Organização" name="nome" value="{{ .organizacao.Nome }}"></md-filled-text-field>
-          <md-filled-text-field label="Responsável" name="responsavel" value="{{ .organizacao.Responsavel }}"></md-filled-text-field>
-          <md-filled-text-field label="CPF/CNPJ" name="documento" value="{{ .organizacao.Cpfcnpj }}"></md-filled-text-field>
-          <md-filled-text-field label="Endereço" name="endereco" value='{{ printf "%s/%s - %s" .organizacao.Cidade .organizacao.Estado .organizacao.Pais }}'></md-filled-text-field><form>
-          <md-filled-text-field label="Telefone" name="telefone" value="{{ .organizacao.Telefone }}"></md-filled-text-field>
-          <md-filled-text-field label="Data Cadastro" name="dt_cadastro" value="{{ .organizacao.DataCadastro }}"></md-filled-text-field>
-        </form>
+          <md-filled-text-field label="Organização" name="nome" value="{{ .organizacao.Nome }}" readonly></md-filled-text-field>
+          <md-filled-text-field label="CPF/CNPJ" name="documento" value="{{ .organizacao.Cpfcnpj }}" readonly></md-filled-text-field>
+          <md-filled-text-field label="Endereço" name="endereco" value="{{ .organizacao.Cidade }}/{{ .organizacao.Estado }} - {{ .organizacao.Pais }}" readonly></md-filled-text-field>
+          <md-filled-text-field label="Telefone" name="telefone" value="{{ .organizacao.Telefone }}" readonly></md-filled-text-field>
+          <md-filled-text-field label="Data Cadastro" name="dt_cadastro" value="{{ .organizacao.DataCadastro.Format "02/01/2006" }}" readonly></md-filled-text-field>
         </form>
       </div>
 
@@ -88,7 +86,7 @@
         <h2>Mensagens</h2>
         <p>Ajuste as configurações de notificação e modelos de mensagens.</p>
         {{ if .mensagens}}
-        <table class="mds-data-table__table">
+        <table class="mdc-data-table__table">
           <thead>
             <tr class="mdc-data-table__header-row">
               <th class="mdc-data-table__header-cell mdc-data-table__header-cell--non-numeric" role="columnheader">Nº</th>
