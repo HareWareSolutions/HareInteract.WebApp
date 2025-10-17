@@ -1,9 +1,11 @@
 package IAM
 
 import (
-	"HareInteract.WebApp/db"
 	"database/sql"
 	"fmt"
+	"log"
+
+	"HareInteract.WebApp/db"
 )
 
 type Usuario struct {
@@ -39,13 +41,13 @@ func DeletaUsuario(id string) {
 	defer db.Close()
 }
 
-func ObterUsuarios() []Usuario{
+func ObterUsuarios() []Usuario {
 	db := db.ConectaBD("public")
 
 	statement := "select * from usuario"
 
 	rows, err := db.Query(statement)
-	if err != nil{
+	if err != nil {
 		panic(err.Error())
 	}
 
@@ -53,20 +55,20 @@ func ObterUsuarios() []Usuario{
 
 	usuarios := []Usuario{}
 
-	for rows.Next(){
+	for rows.Next() {
 
 		var u Usuario
 
 		err := rows.Scan(&u.Id, &u.Nome, &u.Email, &u.Username, &u.Senha, &u.Ativo)
 
-		if err != nil{
+		if err != nil {
 			log.Printf("Erro ao scananear linha: ", err)
 			continue
 		}
 
 		usuarios = append(usuarios, u)
 
-		if err = rows.Err(); err != nil{
+		if err = rows.Err(); err != nil {
 			log.Fatal("Erro na iteração das linhas: %v", err)
 		}
 	}
@@ -75,7 +77,7 @@ func ObterUsuarios() []Usuario{
 
 }
 
-func ObterUsuario(id string) Usuario {
+func ObterUsuario(id int) Usuario {
 	db := db.ConectaBD("public")
 
 	usuario, err := db.Query("select * from usuario where id=$1", id)

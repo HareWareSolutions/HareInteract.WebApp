@@ -16,7 +16,7 @@ func PerfilConfigHandler(r *http.Request) (IAM.Usuario, error) {
 	if !ok {
 		return IAM.Usuario{}, errors.New("Informações de sessão não encontradas.")
 	}
-	data := IAM.ObterUsuario(strconv.Itoa(userID))
+	data := IAM.ObterUsuario(userID)
 
 	return data, nil
 }
@@ -39,7 +39,7 @@ func PerfilConfigAtualizarHandler(w http.ResponseWriter, r *http.Request) {
 func PerfilConfigExcluirHandler(w http.ResponseWriter, r *http.Request) {
 	userId := r.Context().Value(userIdKey).(int)
 
-	user := IAM.ObterUsuario(strconv.Itoa(userId))
+	user := IAM.ObterUsuario(userId)
 
 	user.Ativo = false
 
@@ -80,9 +80,13 @@ func OrganizacaoCarregaHandler(r *http.Request) IAM.Organizacao {
 
 // Handlers de Usuario
 
-func UsuariosCarregaHandler(r *http.Request) []IAM.UsuarioOrganizacao{
+func UsuariosCarregaHandler(r *http.Request) []IAM.UsuarioOrganizacaoPublico {
 	userId := r.Context().Value(userIdKey).(int)
 	userOrg := IAM.ObterUsuarioOrganizacaoPorUsuario(userId)
 
-	
+	idOrg := userOrg.Organizacao
+
+	data := IAM.ObterUsuariosOrgPublicoPorIdOrg(idOrg)
+
+	return data
 }

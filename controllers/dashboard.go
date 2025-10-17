@@ -114,11 +114,14 @@ func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 
 	organizacao := OrganizacaoCarregaHandler(r)
 
+	usuarios := UsuariosCarregaHandler(r)
+
 	data := map[string]interface{}{
 		"searchPath":  searchPath,
 		"user":        user,
 		"mensagem":    mensagens,
 		"organizacao": organizacao,
+		"usuarios":    usuarios,
 	}
 
 	templates.ExecuteTemplate(w, "configuracoes.html", data)

@@ -129,7 +129,36 @@
       <div id="usuarios" class="tab-content">
         <h2>Usuários</h2>
         <p>Gerencie os membros da sua equipe e seus níveis de acesso.</p>
-        
+        <div class="scrollable-table-container">
+          <table class="mdc-data-table__table">
+            <thead>
+              <tr class="mdc-data-table__header-row">
+                <th class="mdc-data-table__header-cell mdc-data-table__header-cell--non-numeric" role="columnheader">ID</th>
+                <th class="mdc-data-table__header-cell" role="columnheader">Nome</th>
+                <th class="mdc-data-table__header-cell" role="columnheader">Nivel Acesso</th>
+                <th class="mdc-data-table__header-cell" role="columnheader">Data Cadastro</th>
+              </tr>
+            </thead>
+            <tbody class="mdc-data-table__content">
+              {{ range .usuarios }}
+                <tr class="mdc-data-table__content">
+                  <td class="mdc-data-table__cell mdc-data-table__cell">{{ .Id }}</td>
+                  <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .Nome }}</td>
+                  <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .NivelAcesso }}</td>
+                  <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .DataCadastro }}</td>
+                  <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">
+                    <form method="POST" action="/configuracoes/excluir/mensagem" onsubmit="return confirm('Tem certeza que deseja excluir a mensagem?')">
+                      <input type="hidden" name="id" value="{{ .Id }}">
+                      <button type="submit"  style="background: none; border: none; padding: 0">
+                        <span class="material-symbols-outlined icon">delete</span>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {{ end }}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div id="logout" class="tab-content">

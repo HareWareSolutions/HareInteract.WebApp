@@ -1,9 +1,11 @@
 package IAM
 
 import (
+	"log"
 	"time"
 
 	"HareInteract.WebApp/db"
+	//"HareInteract.WebApp/models/IAM"
 )
 
 type UsuarioOrganizacao struct {
@@ -14,9 +16,10 @@ type UsuarioOrganizacao struct {
 	DataCadastro time.Time `json:"dataCadastro"`
 }
 
-type UsuarioOrganizacaoPublico struct{
+type UsuarioOrganizacaoPublico struct {
 	UsuarioOrganizacao
-	Nome string
+	Nome  string
+	Email string
 }
 
 func CriarUsuarioOrganizacao(usuario, organizacao int, nivelAcesso string) {
@@ -45,20 +48,18 @@ func DeletaUsuarioOrganizacao(usuario int) {
 	defer db.Close()
 }
 
-func ObterUsuariosOrganizacaoPorIdOrg(id int) []UsuarioOrganizacao{
+func ObterUsuariosOrganizacaoPorIdOrg(id int) []UsuarioOrganizacao {
 	db := db.ConectaBD("public")
 
-	statement := "SELECT * FROM usuario_organizacao WHERE organizacao = $1", id
-
-	rows, err := db.Query(statement)
-	if err != nil{
-		panic(err(Error()))
+	rows, err := db.Query("SELECT * FROM usuario_organizacao WHERE organizacao = $1", id)
+	if err != nil {
+		panic(err.Error())
 	}
 	defer rows.Close()
 
-	usuarios := []UsuarioOrganizacao
+	usuarios := []UsuarioOrganizacao{}
 
-	for rows.Next(){
+	for rows.Next() {
 		var u UsuarioOrganizacao
 
 		err := rows.Scan(&u.Id, &u.Usuario, &u.Organizacao, &u.NivelAcesso, &u.DataCadastro)
@@ -75,6 +76,19 @@ func ObterUsuariosOrganizacaoPorIdOrg(id int) []UsuarioOrganizacao{
 	}
 
 	return usuarios
+}
+
+func ObterUsuariosOrgPublicoPorIdOrg(id int) []UsuarioOrganizacaoPublico {
+
+	usuariosOrg := ObterUsuariosOrganizacaoPorIdOrg(id)
+	usuariosOrgPub := []UsuarioOrganizacaoPublico{}
+
+	for _, usuario := range usuariosOrg {
+		usuarioOrgPub := ConverterUsuarioOrgPublico(usuario)
+		usuariosOrgPub = append(usuariosOrgPub, usuarioOrgPub)
+	}
+
+	return usuariosOrgPub
 }
 
 func ObterUsuarioOrganizacao(id int) UsuarioOrganizacao {
@@ -132,6 +146,19 @@ func AtualizarUsuarioOrganizacao(id, usuario, organizacao int, nivelAcesso strin
 	defer db.Close()
 }
 
-func ConverterUsuarioOrgPublico(u UsuarioOrganizacao) UsuarioOrganizacaoPublico{
-	
+func ConverterUsuarioOrgPublico(u UsuarioOrganizacao) UsuarioOrganizacaoPublico {
+
+	usuario := ObterUsuario(u.Usuario)
+
+	usuarioOrgPub := UsuarioOrganizacaoPublico{}
+
+	usuarioOrgPub.Id = u.Id
+	usuarioOrgPub.Usuario = u.Usuario
+	usuarioOrgPub.Organizacao = u.Organizacao
+	usuarioOrgPub.NivelAcesso = u.NivelAcesso
+	usuarioOrgPub.DataCadastro = u.DataCadastro
+	usuarioOrgPub.Nome = usuario.Nome
+	usuarioOrgPub.Email = usuario.Email
+
+	return usuarioOrgPub
 }
