@@ -14,7 +14,7 @@
   <script type="module">
     import 'https://unpkg.com/@material/web/textfield/filled-text-field.js?module';
     import 'https://unpkg.com/@material/web/button/filled-button.js?module';
-    import 'https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js';
+    
   </script>
 </head>
 
@@ -137,6 +137,7 @@
                 <th class="mdc-data-table__header-cell" role="columnheader">Nome</th>
                 <th class="mdc-data-table__header-cell" role="columnheader">Nivel Acesso</th>
                 <th class="mdc-data-table__header-cell" role="columnheader">Data Cadastro</th>
+                <th class="mdc-data-table__header-cell" role="columnheader">Ações</th>
               </tr>
             </thead>
             <tbody class="mdc-data-table__content">
@@ -145,20 +146,63 @@
                   <td class="mdc-data-table__cell mdc-data-table__cell">{{ .Id }}</td>
                   <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .Nome }}</td>
                   <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .NivelAcesso }}</td>
-                  <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .DataCadastro }}</td>
+                  <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .DataCadastro.Format "02/01/2006" }}</td>
                   <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">
-                    <form method="POST" action="/configuracoes/excluir/mensagem" onsubmit="return confirm('Tem certeza que deseja excluir a mensagem?')">
-                      <input type="hidden" name="id" value="{{ .Id }}">
-                      <button type="submit"  style="background: none; border: none; padding: 0">
-                        <span class="material-symbols-outlined icon">user_attributes</span>
+                      <button type="button"
+                        class="open-edit-dialog-btn"
+                        data-user-id="{{ .Id }}"
+                        data-user-nome="{{ .Nome }}"
+                        data-user-nivel="{{ .NivelAcesso }}"
+                        style="background: none; border: none; padding: 0">
+                        <span class="material-symbols-outlined icon">manage_accounts</span>
                       </button>
-                    </form>
                   </td>
                 </tr>
               {{ end }}
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div id="edit-user-dialog"
+        class="mdc-dialog"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="edit-dialog-title">
+        <div class="mdc-dialog__container">
+          <div class="mdc-dialog__surface">
+            <h2 class="mdc-dialog__title" id="edit-user-id-text">Edição de Usuário</h2>
+            <form id="user-edit-form" method="POST" action="/configuracoes/salvarOrg">
+              <input type="hidden" id="edit-user-id" name="id" value="">
+
+              <div class="mdc-dialog__content">
+                <div class="mdc-text-field mdc-text-field--filled full-width">
+                  <input type="text" id="edit-nome" name="nome" class="mdc-text-field__input" readonly>
+                  <label class="mdc-floating-label" for="edit-nome">Nome</label>
+                  <div class="mdc-line-ripple"></div>
+                </div>
+
+                <div class="mdc-text-field mdc-text-field--filled full-width mt-16">
+                  <input type="number" id="edit-nivel-acesso" name="nivelAcesso" class="mdc-text-field__input">
+                  <label class="mdc-floating-label" for="edit-nivel-acesso">Nível Acesso</label>
+                  <div class="mdc-line-ripple"></div>
+                </div>
+              </div>
+              <div class="mdc-dialog__actions">
+                <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">
+                  <div class="mdc-button__ripple"></div>
+                  <span class="mdc-button__label">Cancelar</span>
+                </button>
+
+                <button type="submit" class="mdc-button mdc-dialog__button mdc-button--raised">
+                  <div class="mdc-button__ripple"></div>
+                  <span class="mdc-button__label">Salvar Alterações</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
       </div>
 
       <div id="logout" class="tab-content">
@@ -169,6 +213,7 @@
     </div>
   </div>
 </div>
+<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 <script src="/static/scripts/configuracoes.js"></script>
 <script src="/static/scripts/dashboard.js"></script>
 </body>

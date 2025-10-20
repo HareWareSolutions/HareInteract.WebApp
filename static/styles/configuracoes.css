@@ -8,6 +8,17 @@
     /* Botões */
     --md-filled-button-container-color: var(--primary-color);
     --md-filled-button-label-text-color: #ffffff;
+    /* Seleciona especificamente a label do botão "Cancelar" dentro do diálogo */
+    .mdc-dialog__actions button[data-mdc-dialog-action="close"] .mdc-button__label {
+        /* Cor Azul Ciano */
+        color: #04c0e2 !important; 
+    }
+
+    /* Mudar o Fundo (Raised Button) para Azul Ciano */
+    .mdc-dialog__actions .mdc-button--raised {
+        background-color: #04c0e2 !important;
+        color: white !important; /* Garante que o texto seja branco para contraste */
+    }
 
     /* Campos de texto */
     --md-filled-text-field-container-color: #e6f9fc; /* fundo normal */
