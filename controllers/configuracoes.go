@@ -78,7 +78,7 @@ func OrganizacaoCarregaHandler(r *http.Request) IAM.Organizacao {
 	return org
 }
 
-// Handlers de Usuario
+// Handlers de Usuarios
 
 func UsuariosCarregaHandler(r *http.Request) []IAM.UsuarioOrganizacaoPublico {
 	userId := r.Context().Value(userIdKey).(int)
@@ -89,4 +89,18 @@ func UsuariosCarregaHandler(r *http.Request) []IAM.UsuarioOrganizacaoPublico {
 	data := IAM.ObterUsuariosOrgPublicoPorIdOrg(idOrg)
 
 	return data
+}
+
+func UsuarioAtualizaHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := r.FormValue("id")
+	userId, _ := strconv.Atoi(id)
+
+	userOrg := IAM.ObterUsuarioOrganizacao(userId)
+
+	userOrg.NivelAcesso = r.FormValue("nivelAcesso")
+
+	IAM.AtualizarUsuarioOrganizacao(userOrg.Id, userOrg.Usuario, userOrg.Organizacao, userOrg.NivelAcesso)
+
+	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }

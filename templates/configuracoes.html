@@ -172,20 +172,68 @@
         <div class="mdc-dialog__container">
           <div class="mdc-dialog__surface">
             <h2 class="mdc-dialog__title" id="edit-user-id-text">Edição de Usuário</h2>
-            <form id="user-edit-form" method="POST" action="/configuracoes/salvarOrg">
+            <form id="user-edit-form" method="POST" action="/configuracoes/salvarUserOrg">
               <input type="hidden" id="edit-user-id" name="id" value="">
 
               <div class="mdc-dialog__content">
+
                 <div class="mdc-text-field mdc-text-field--filled full-width">
                   <input type="text" id="edit-nome" name="nome" class="mdc-text-field__input" readonly>
                   <label class="mdc-floating-label" for="edit-nome">Nome</label>
                   <div class="mdc-line-ripple"></div>
                 </div>
 
-                <div class="mdc-text-field mdc-text-field--filled full-width mt-16">
-                  <input type="number" id="edit-nivel-acesso" name="nivelAcesso" class="mdc-text-field__input">
-                  <label class="mdc-floating-label" for="edit-nivel-acesso">Nível Acesso</label>
-                  <div class="mdc-line-ripple"></div>
+                <div class="mdc-select mdc-select--filled full-width mt-16">
+                  <input type="hidden" name="nivelAcesso" id="edit-nivel-acesso-input-hidden"> <div class="mdc-select__anchor" 
+                    role="button" 
+                    aria-haspopup="listbox" 
+                    aria-expanded="false" 
+                    aria-labelledby="edit-nivel-acesso-label">
+                  <div class="mdc-select__anchor" role="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="edit-nivel-acesso-label">
+                    
+                    <span class="mdc-select__selected-text-container">
+                      <span id="edit-nivel-acesso-label" class="mdc-select__selected-text"></span>
+                    </span>
+
+                    <span class="mdc-select__ripple"></span>
+                    
+                    <label class="mdc-floating-label" for="edit-nivel-acesso">Nível Acesso</label>
+                    
+                    <span class="mdc-select__dropdown-icon">
+                      <span class="material-symbols-outlined">arrow_drop_down</span>
+                    </span>
+                    
+                    <span class="mdc-line-ripple"></span>
+                  </div>
+
+                  <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
+                    <ul class="mdc-list" role="listbox">
+                      <li class="mdc-list-item" role="option" data-value="Administrador">
+                        <span class="mdc-list-item__ripple"></span>
+                        <span class="mdc-list-item__text">Administrador</span>
+                      </li>
+                      <li class="mdc-list-item" role="option" data-value="Proprietario">
+                        <span class="mdc-list-item__ripple"></span>
+                        <span class="mdc-list-item__text">Proprietario</span>
+                      </li>
+                      <li class="mdc-list-item" role="option" data-value="Gerente">
+                        <span class="mdc-list-item__ripple"></span>
+                        <span class="mdc-list-item__text">Gerente</span>
+                      </li>
+                      <li class="mdc-list-item" role="option" data-value="Vendedor">
+                        <span class="mdc-list-item__ripple"></span>
+                        <span class="mdc-list-item__text">Vendedor</span>
+                      </li>
+                      <li class="mdc-list-item" role="option" data-value="Suporte">
+                        <span class="mdc-list-item__ripple"></span>
+                        <span class="mdc-list-item__text">Suporte</span>
+                      </li>
+                      <li class="mdc-list-item" role="option" data-value="TI">
+                        <span class="mdc-list-item__ripple"></span>
+                        <span class="mdc-list-item__text">TI</span>
+                      </li>
+                    </ul>
+                  </div>  
                 </div>
               </div>
               <div class="mdc-dialog__actions">

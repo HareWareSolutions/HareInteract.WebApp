@@ -1,6 +1,8 @@
 package IAM
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
@@ -102,8 +104,8 @@ func ObterUsuarioOrganizacao(id int) UsuarioOrganizacao {
 	var nivelAcesso_db string
 
 	err := row.Scan(&id_db, &usuario_db, &organizacao_db, &nivelAcesso_db)
-	if err != nil {
-		panic(err.Error())
+	if err == sql.ErrNoRows {
+		fmt.Println(row)
 	}
 
 	usuarioOrganizacaoParaEditar.Id = id_db
