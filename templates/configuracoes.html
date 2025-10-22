@@ -109,7 +109,7 @@
                   <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric"><span class="material-symbols-outlined icon">visibility_off</span></td>
                   {{ end }}
                   <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">
-                    <form method="POST" action="/configuracoes/excluir/mensagem" onsubmit="return confirm('Tem certeza que deseja excluir a mensagem?')">
+                    <form method="POST" action="/configuracoes/excluirMensagem" onsubmit="return confirm('Tem certeza que deseja excluir a mensagem?')">
                       <input type="hidden" name="id" value="{{ .Id }}">
                       <button type="submit"  style="background: none; border: none; padding: 0">
                         <span class="material-symbols-outlined icon">delete</span>
@@ -154,11 +154,14 @@
                         data-user-nome="{{ .Nome }}"
                         data-user-nivel="{{ .NivelAcesso }}"
                         style="background: none; border: none; padding: 0">
-                        <span class="material-symbols-outlined icon">manage_accounts</span>
+                        <span class="material-symbols-outlined icon" >manage_accounts</span>
                       </button>
-                      <button style="background: none; border: none; padding: 0">
-                        <span class="material-symbols-outlined icon">delete</span>
-                      </button>
+                      <form method="POST"  action="/configuracoes/excluirUsuarioOrganizacao" onsubmit="return confirm('Tem certeza que deseja remover {{ .Nome }} de sua organização?')">
+                        <input type="hidden" name="id" value="{{ .Id }}">
+                        <button type="submit" style="background: none; border: none; padding: 0">
+                          <span class="material-symbols-outlined icon">delete</span>
+                        </button>
+                      </form>
                   </td>
                 </tr>
               {{ end }}

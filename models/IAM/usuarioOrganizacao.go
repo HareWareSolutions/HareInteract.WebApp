@@ -53,7 +53,7 @@ func DeletaUsuarioOrganizacao(usuario int) {
 func ObterUsuariosOrganizacaoPorIdOrg(id int) []UsuarioOrganizacao {
 	db := db.ConectaBD("public")
 
-	rows, err := db.Query("SELECT * FROM usuario_organizacao WHERE organizacao = $1", id)
+	rows, err := db.Query("SELECT * FROM usuario_organizacao WHERE organizacao = $1 ORDER BY id", id)
 	if err != nil {
 		panic(err.Error())
 	}

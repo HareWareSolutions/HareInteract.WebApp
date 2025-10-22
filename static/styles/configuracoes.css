@@ -174,3 +174,7 @@
     /* Garante que a borda de baixo seja desenhada corretamente */
     border-bottom: 1px solid var(--md-sys-color-outline-variant, #e0e0e0);
 }
+
+button{
+    cursor: pointer;
+}

@@ -104,3 +104,12 @@ func UsuarioAtualizaHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
+
+func UsuarioExcluirHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.FormValue("id")
+	idUserExcluir, _ := strconv.Atoi(id)
+
+	IAM.DeletaUsuarioOrganizacao(idUserExcluir)
+
+	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
+}
