@@ -147,7 +147,7 @@
                   <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .Nome }}</td>
                   <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .NivelAcesso }}</td>
                   <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">{{ .DataCadastro.Format "02/01/2006" }}</td>
-                  <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">
+                  <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric" style="display: flex; align-items: center; gap: 4px;">
                       <button type="button"
                         class="open-edit-dialog-btn"
                         data-user-id="{{ .Id }}"
@@ -156,7 +156,8 @@
                         style="background: none; border: none; padding: 0">
                         <span class="material-symbols-outlined icon" >manage_accounts</span>
                       </button>
-                      <form method="POST"  action="/configuracoes/excluirUsuarioOrganizacao" onsubmit="return confirm('Tem certeza que deseja remover {{ .Nome }} de sua organização?')">
+                      <form method="POST"  action="/configuracoes/excluirUsuarioOrganizacao" 
+                        onsubmit="return confirm('Tem certeza que deseja remover {{ .Nome }} de sua organização?')">
                         <input type="hidden" name="id" value="{{ .Id }}">
                         <button type="submit" style="background: none; border: none; padding: 0">
                           <span class="material-symbols-outlined icon">delete</span>
