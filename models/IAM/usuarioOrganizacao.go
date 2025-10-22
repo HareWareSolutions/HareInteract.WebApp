@@ -164,3 +164,12 @@ func ConverterUsuarioOrgPublico(u UsuarioOrganizacao) UsuarioOrganizacaoPublico 
 
 	return usuarioOrgPub
 }
+
+func ValidarNivelAcesso(nivelUsuario string, nivelRequerido string) bool {
+
+	if nivelUsuario == nivelRequerido {
+		return true
+	} else {
+		return false
+	}
+}

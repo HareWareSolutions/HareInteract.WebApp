@@ -113,3 +113,13 @@ func UsuarioExcluirHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
+
+func UsuarioSairOrganizacao(w http.ResponseWriter, r *http.Request) {
+	id, _ := r.Context().Value(userIdKey).(int)
+
+	usuario := IAM.ObterUsuarioOrganizacaoPorUsuario(id)
+
+	if usuario.NivelAcesso != "Proprietario" {
+		//return "Proprietário não pode sair da organização. Entrar em contato com suporte do sistema."
+	}
+}
