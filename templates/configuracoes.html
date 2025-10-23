@@ -171,7 +171,10 @@
         </div>
 
         <form id="Frm-inviteUserOrg">
-
+          <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Pesquisar..." class="search-input" action="/configuracoes/convidar">
+            <button style="background: none; border: none; padding: 0"><span class="material-symbols-outlined add-icon">person_add</span></button>
+          </div>
         </form>
 
         <form id="Frm-sairOrg" action="/configuracoes/sairOrganizacao" method="POST" onsubmit="return confirm('Tem certeza que deseja sair da organização?')">

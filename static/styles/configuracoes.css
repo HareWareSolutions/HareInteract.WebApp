@@ -182,3 +182,36 @@ button{
 #Frm-sairOrg{
     margin-top: 10%;
 }
+
+/* Search Bar Styles */
+.search-container {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    margin: 24px 0;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(4, 192, 226, 0.5);
+}
+
+.add-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 24px;
+}

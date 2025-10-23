@@ -93,6 +93,13 @@ func ObterUsuariosOrgPublicoPorIdOrg(id int) []UsuarioOrganizacaoPublico {
 	return usuariosOrgPub
 }
 
+func ObterUsuarioOrgPublicoPorUsuario(id int) UsuarioOrganizacaoPublico {
+	UsuarioOrg := ObterUsuarioOrganizacaoPorUsuario(id)
+	UsuarioOrgPub := ConverterUsuarioOrgPublico(UsuarioOrg)
+
+	return UsuarioOrgPub
+}
+
 func ObterUsuarioOrganizacao(id int) UsuarioOrganizacao {
 	db := db.ConectaBD("public")
 

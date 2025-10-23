@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -115,11 +117,47 @@ func UsuarioExcluirHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UsuarioSairOrganizacao(w http.ResponseWriter, r *http.Request) {
-	id, _ := r.Context().Value(userIdKey).(int)
+	id, err := r.Context().Value(userIdKey).(int)
 
 	usuario := IAM.ObterUsuarioOrganizacaoPorUsuario(id)
 
-	if usuario.NivelAcesso != "Proprietario" {
-		//return "Proprietário não pode sair da organização. Entrar em contato com suporte do sistema."
+	if IAM.ValidarNivelAcesso(usuario.NivelAcesso, "Proprietario") {
+		log.Printf("Proprietário não deve sair da organização.")
+		http.Error(w, "Proprietário não pode sair da organização. A organização deve ter outro proprietário designado primeiro ou ser excluída.", http.StatusForbidden)
+		return
 	}
+
+	IAM.DeletaUsuarioOrganizacao(id)
+	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
+}
+
+func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("searchInput")
+	id, err := r.Context().Value(userIdKey).(int)
+
+	if err != nil {
+		log.Printf("Chave usuário não encontrada.")
+		http.Error(w, "Chave usuário não encontrada.", http.StatusForbidden)
+		return
+	}
+
+	usuarioOrigem := IAM.ObterUsuarioOrganizacaoPublicPorUsuario(id)
+
+	usuarioDestino, err := IAM.ObterUsuarioPorUsername(username)
+
+	if err != nil {
+		log.Printf("Erro ao buscar usuário")
+		http.Error(w, "Erro ao buscar usuário. Verifique se o Username está correto.", http.StatusForbidden)
+		return
+	}
+
+	conteudo_mensagem := fmt.Sprintf("%s convidou você para sua organização!")
+
+	var mensagem IAM.Mensagem
+
+	mensagem.Id_remetente = usuarioOrigem.Id
+	mensagem.Id_destinatario = usuarioDestino.Id
+	mensagem.Mensagem_conteudo = 
+	mensagem.Urgencia = "Alta"
+
 }
