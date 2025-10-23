@@ -108,6 +108,25 @@ func ObterUsuario(id int) Usuario {
 	return usuarioParaEditar
 }
 
+func ObterUsuarioPorUsername(username string) (Usuario, error) {
+	db := db.ConectaBD("public")
+
+	row := db.QueryRow("SELECT id, username, senha, ativo FROM usuario WHERE username = $1", username)
+
+	var usuario Usuario
+
+	err := row.Scan(&usuario.Id, &usuario.Username, &usuario.Senha, &usuario.Ativo)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return Usuario{}, fmt.Errorf("usuário '%s' não encontrado", username)
+		}
+		return Usuario{}, fmt.Errorf("erro ao buscar usuário: %v", err)
+	}
+
+	defer db.Close()
+	return usuario, nil
+}
+
 func LoginUsuario(username string) (Usuario, error) {
 	db := db.ConectaBD("public")
 

@@ -15,18 +15,19 @@ type Mensagem struct {
 	Data_envio        time.Time
 	Status            bool
 	Urgencia          string
+	Tipo              string
 }
 
-func CriarMensagem(id_remetente, id_destinatario int, mensagem_conteudo string, status bool, urgencia string) {
+func CriarMensagem(id_remetente, id_destinatario int, mensagem_conteudo string, status bool, urgencia string, tipo string) {
 	db := db.ConectaBD("public")
 	data_envio := time.Now().Format("02/01/2006")
 
-	inserirMensagem, err := db.Prepare("insert into mensagens(id_remetente, id_destinatario, conteudo_mensagem, status, urgencia, data_envio) values($1, $2, $3, $4, $5, $6)")
+	inserirMensagem, err := db.Prepare("insert into mensagens(id_remetente, id_destinatario, conteudo_mensagem, status, urgencia, data_envio, tipo) values($1, $2, $3, $4, $5, $6, $7)")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	inserirMensagem.Exec(id_remetente, id_destinatario, mensagem_conteudo, data_envio, status, urgencia)
+	inserirMensagem.Exec(id_remetente, id_destinatario, mensagem_conteudo, data_envio, status, urgencia, tipo)
 	defer db.Close()
 }
 
@@ -58,7 +59,7 @@ func ObterMensagens() []Mensagem {
 	for rows.Next() {
 		var m Mensagem
 
-		err := rows.Scan(&m.Id, &m.Id_remetente, &m.Id_destinatario, &m.Mensagem_conteudo, &m.Data_envio, &m.Status, &m.Urgencia)
+		err := rows.Scan(&m.Id, &m.Id_remetente, &m.Id_destinatario, &m.Mensagem_conteudo, &m.Data_envio, &m.Status, &m.Urgencia, &m.Tipo)
 
 		if err != nil {
 			log.Printf("Erro escanear linha: ", err)
@@ -81,7 +82,7 @@ func ObterMensagem(id int) Mensagem {
 
 	row := db.QueryRow("select * from mensagems where id = $1", id)
 
-	err := row.Scan(&mensagem.Id, &mensagem.Id_remetente, &mensagem.Id_destinatario, &mensagem.Mensagem_conteudo, &mensagem.Data_envio, &mensagem.Status, &mensagem.Urgencia)
+	err := row.Scan(&mensagem.Id, &mensagem.Id_remetente, &mensagem.Id_destinatario, &mensagem.Mensagem_conteudo, &mensagem.Data_envio, &mensagem.Status, &mensagem.Urgencia, &mensagem.Tipo)
 
 	if err != nil {
 		panic(err.Error())

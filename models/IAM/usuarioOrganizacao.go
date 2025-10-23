@@ -93,6 +93,13 @@ func ObterUsuariosOrgPublicoPorIdOrg(id int) []UsuarioOrganizacaoPublico {
 	return usuariosOrgPub
 }
 
+func ObterUsuarioOrgPublicoPorUsuario(id int) UsuarioOrganizacaoPublico {
+	UsuarioOrg := ObterUsuarioOrganizacaoPorUsuario(id)
+	UsuarioOrgPub := ConverterUsuarioOrgPublico(UsuarioOrg)
+
+	return UsuarioOrgPub
+}
+
 func ObterUsuarioOrganizacao(id int) UsuarioOrganizacao {
 	db := db.ConectaBD("public")
 
@@ -163,4 +170,13 @@ func ConverterUsuarioOrgPublico(u UsuarioOrganizacao) UsuarioOrganizacaoPublico 
 	usuarioOrgPub.Email = usuario.Email
 
 	return usuarioOrgPub
+}
+
+func ValidarNivelAcesso(nivelUsuario string, nivelRequerido string) bool {
+
+	if nivelUsuario == nivelRequerido {
+		return true
+	} else {
+		return false
+	}
 }
