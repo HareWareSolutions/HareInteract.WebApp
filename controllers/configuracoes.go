@@ -131,18 +131,11 @@ func UsuarioSairOrganizacao(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
 
-
 func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("searchInput")
-	id, err := r.Context().Value(userIdKey).(int)
+	id := r.Context().Value(userIdKey).(int)
 
-	if err != nil {
-		log.Printf("Chave usuário não encontrada.")
-		http.Error(w, "Chave usuário não encontrada.", http.StatusForbidden)
-		return
-	}
-
-	usuarioOrigem := IAM.ObterUsuarioOrganizacaoPublicPorUsuario(id)
+	usuarioOrigem := IAM.ObterUsuarioOrgPublicoPorUsuario(id)
 
 	usuarioDestino, err := IAM.ObterUsuarioPorUsername(username)
 
@@ -152,14 +145,16 @@ func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conteudo_mensagem := fmt.Sprintf("%s convidou você para sua organização!")
+	conteudo_mensagem := fmt.Sprintf("%s convidou você para sua organização!", &usuarioOrigem.Nome)
 
 	var mensagem IAM.Mensagem
 
 	mensagem.Id_remetente = usuarioOrigem.Id
 	mensagem.Id_destinatario = usuarioDestino.Id
-	mensagem.Mensagem_conteudo =
-		mensagem.Urgencia = "Alta"
+	mensagem.Mensagem_conteudo = conteudo_mensagem
+	mensagem.Urgencia = "Alta"
+	mensagem.Tipo = "Convite"
+	IAM.CriarMensagem(mensagem.Id_remetente, mensagem.Id_destinatario, mensagem.Mensagem_conteudo, mensagem.Urgencia, mensagem.Tipo)
 
+	fmt.Println("Mensagem enviada!")
 }
-
