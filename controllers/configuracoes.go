@@ -117,7 +117,7 @@ func UsuarioExcluirHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UsuarioSairOrganizacao(w http.ResponseWriter, r *http.Request) {
-	id, err := r.Context().Value(userIdKey).(int)
+	id := r.Context().Value(userIdKey).(int)
 
 	usuario := IAM.ObterUsuarioOrganizacaoPorUsuario(id)
 
@@ -130,6 +130,7 @@ func UsuarioSairOrganizacao(w http.ResponseWriter, r *http.Request) {
 	IAM.DeletaUsuarioOrganizacao(id)
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
+
 
 func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("searchInput")
@@ -157,7 +158,8 @@ func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 
 	mensagem.Id_remetente = usuarioOrigem.Id
 	mensagem.Id_destinatario = usuarioDestino.Id
-	mensagem.Mensagem_conteudo = 
-	mensagem.Urgencia = "Alta"
+	mensagem.Mensagem_conteudo =
+		mensagem.Urgencia = "Alta"
 
 }
+

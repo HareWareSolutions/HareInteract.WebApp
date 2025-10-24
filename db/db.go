@@ -18,7 +18,7 @@ func ConectaBD(search_path string) *sql.DB {
 		search_path = "C" + search_path
 	}
 
-	conexao := fmt.Sprintf("user=postgres dbname=HareInteractCRM password=12345 host=localhost sslmode=disable search_path=%s,public", search_path)
+	conexao := fmt.Sprintf("user=postgres dbname=HareInteractCRM password=HareWare@2024 host=localhost sslmode=disable search_path=%s,public", search_path)
 
 	db, err := sql.Open("postgres", conexao)
 	if err != nil {

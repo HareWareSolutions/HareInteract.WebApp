@@ -29,7 +29,8 @@
   <h1>Ambiente de Integração WhatsApp</h1>
 
   {{if .error}}
-  <div style="color: red; margin-bottom: 20px;">
+  <div class="error-message">
+    <span class="material-symbols-outlined">error</span>
     <p>Ocorreu um erro: {{.error}}</p>
   </div>
   {{end}}
@@ -37,28 +38,41 @@
   {{if .hasInstance}}
 
   {{if .isConnected}}
+  <!-- Instância conectada -->
   <div class="status-container connected">
     <span class="material-symbols-outlined">check_circle</span>
-    <p>🎉 Sua instância do WhatsApp está conectada!</p>
+    <div>
+      <h3>🎉 Sua instância do WhatsApp está conectada!</h3>
+      <p>Agora você pode usar todas as funcionalidades de integração.</p>
+    </div>
   </div>
+
   {{else}}
+  <!--  Instância desconectada -->
   <div class="status-container disconnected">
     <span class="material-symbols-outlined">link_off</span>
-    <p>Sua instância está ativa, mas desconectada.</p>
-    <p>Para conectar, escaneie o QR Code abaixo com o seu celular.</p>
+    <h3>Sua instância está ativa, mas desconectada.</h3>
+    <p>Escaneie o QR Code abaixo com o aplicativo do WhatsApp no seu celular para conectar:</p>
 
+    {{if .qrCodeBase64}}
     <div class="qrcode-container">
-      <img id="qrcode-image" alt="QR Code para conectar o WhatsApp" style="width: 250px; height: 250px;" />
+      <img id="qrcode-image" src="data:image/png;base64,{{.qrCodeBase64}}" alt="QR Code para conectar o WhatsApp" width="250" height="250" />
     </div>
+    {{else}}
+    <p class="error-message">❌ Não foi possível carregar o QR Code. Tente novamente em alguns segundos.</p>
+    {{end}}
   </div>
   {{end}}
 
   {{else}}
+  <!-- Nenhuma instância criada -->
   <div class="create-instance-container">
-    <p>Você ainda não tem uma instância de WhatsApp configurada. Crie uma para começar a usar!</p>
+    <h3>Você ainda não tem uma instância de WhatsApp configurada.</h3>
+    <p>Crie uma instância para começar a usar a integração:</p>
+
     <form action="/whatsapp/criarInstancia" method="POST">
-      <label for="instanceName">Nome da Instância:</label>
-      <md-filled-text-field name="instanceName" label="Nome único para a instância" required></md-filled-text-field>
+      <md-filled-text-field name="instanceName" label="Nome da Instância" required></md-filled-text-field>
+      <br /><br />
       <md-filled-button type="submit">Criar Instância</md-filled-button>
     </form>
   </div>
