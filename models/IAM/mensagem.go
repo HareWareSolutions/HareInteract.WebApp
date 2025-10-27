@@ -18,17 +18,23 @@ type Mensagem struct {
 	Tipo              string
 }
 
-func CriarMensagem(id_remetente, id_destinatario int, mensagem_conteudo string, urgencia string, tipo string) {
+func CriarMensagem(id_remetente int, id_destinatario int, mensagem_conteudo string, urgencia string, tipo string) {
 	db := db.ConectaBD("public")
-	data_envio := time.Now().Format("02/01/2006")
+	data_envio := time.Now()
 	status := false
 
-	inserirMensagem, err := db.Prepare("insert into mensagens(id_remetente, id_destinatario, conteudo_mensagem, status, urgencia, data_envio, tipo) values($1, $2, $3, $4, $5, $6, $7)")
+	inserirMensagem, err := db.Prepare("insert into mensagens(id_remetente, id_destinatario, conteudo_mensagem, data_envio, status, urgencia,  tipo) values($1, $2, $3, $4, $5, $6, $7)")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	inserirMensagem.Exec(id_remetente, id_destinatario, mensagem_conteudo, data_envio, status, urgencia, tipo)
+	_, err = inserirMensagem.Exec(id_remetente, id_destinatario, mensagem_conteudo, data_envio, status, urgencia, tipo)
+
+	if err != nil {
+		log.Printf("Erro ao criar mensagem: ", err)
+		return
+	}
+
 	defer db.Close()
 }
 

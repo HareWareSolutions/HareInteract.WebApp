@@ -40,7 +40,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 			session.Values["authenticated"] = true
 			session.Values["orgCpfCnpj"] = cpfCnpj
-			session.Values["userId"] = usuarioOrganizacao.Id
+			session.Values["userId"] = usuarioOrganizacao.Usuario
 			session.Values["accessLevel"] = usuarioOrganizacao.NivelAcesso
 
 			err = SaveSession(w, r, session)

@@ -135,17 +135,19 @@ func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("searchInput")
 	id := r.Context().Value(userIdKey).(int)
 
+	fmt.Println("User name:", username)
+
 	usuarioOrigem := IAM.ObterUsuarioOrgPublicoPorUsuario(id)
 
 	usuarioDestino, err := IAM.ObterUsuarioPorUsername(username)
 
 	if err != nil {
-		log.Printf("Erro ao buscar usuário")
+		log.Printf("Erro ao buscar usuário: ", err)
 		http.Error(w, "Erro ao buscar usuário. Verifique se o Username está correto.", http.StatusForbidden)
 		return
 	}
 
-	conteudo_mensagem := fmt.Sprintf("%s convidou você para sua organização!", &usuarioOrigem.Nome)
+	conteudo_mensagem := fmt.Sprintf("%s convidou você para sua organização!", usuarioOrigem.Nome)
 
 	var mensagem IAM.Mensagem
 

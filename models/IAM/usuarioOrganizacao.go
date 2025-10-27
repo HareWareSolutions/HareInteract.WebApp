@@ -136,7 +136,7 @@ func ObterUsuarioOrganizacaoPorUsuario(usuarioId int) UsuarioOrganizacao {
 		&usuarioOrganizacaoRecuperado.Organizacao,
 		&usuarioOrganizacaoRecuperado.NivelAcesso)
 	if err != nil {
-		panic(err.Error())
+		log.Printf("Erro na chamada função: %v", err)
 	}
 
 	defer db.Close()
