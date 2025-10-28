@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -48,6 +49,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+
+			fmt.Println(session.Values["accessLevel"])
 
 			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 			return

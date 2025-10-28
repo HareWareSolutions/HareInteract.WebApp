@@ -4,6 +4,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -11,8 +12,9 @@ import (
 type contextKey string
 
 const (
-	orgCpfCnpjKey contextKey = "orgCpfCnpj"
-	userIdKey     contextKey = "userID"
+	orgCpfCnpjKey      contextKey = "orgCpfCnpj"
+	userIdKey          contextKey = "userID"
+	nivelAcessoUserKey contextKey = "accessLevel"
 )
 
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
@@ -44,10 +46,19 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		nivelAcessoUsuario, ok := session.Values["accessLevel"].(string)
+		fmt.Println(nivelAcessoUsuario)
+		if !ok {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+
 		// Criar um novo contexto com o valor do CPF/CNPJ
 		ctx := context.WithValue(r.Context(), orgCpfCnpjKey, orgCpfCnpj)
 		ctx = context.WithValue(ctx, userIdKey, userID)
+		ctx = context.WithValue(ctx, nivelAcessoUserKey, nivelAcessoUsuario)
 
+		fmt.Println(ctx)
 		// Chamar o próximo handler com o novo contexto
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}

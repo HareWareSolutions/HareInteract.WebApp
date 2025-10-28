@@ -37,10 +37,12 @@
         <span class="material-symbols-outlined icon">chat</span>
         Mensagens
       </button>
-      <button class="nav-item" data-tab="usuarios">
-        <span class="material-symbols-outlined icon">group</span>
-        Usuários
-      </button>
+      {{ if eq .nivelAcessoUser "Proprietario" "Gerente" }}
+        <button class="nav-item" data-tab="usuarios">
+          <span class="material-symbols-outlined icon">group</span>
+          Usuários
+        </button>
+      {{ end }}
       <button class="nav-item logout" data-tab="logout">
         <span class="material-symbols-outlined icon">logout</span>
         Logout

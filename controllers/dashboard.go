@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -98,10 +99,15 @@ func IntegracoesHandler(w http.ResponseWriter, r *http.Request) {
 
 func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 	searchPath, ok := r.Context().Value(orgCpfCnpjKey).(string)
+
 	if !ok {
 		http.Error(w, "Informações de sessão não encontradas.", http.StatusUnauthorized)
 		return
 	}
+
+	nivelAcessoUser := r.Context().Value(nivelAcessoUserKey)
+
+	fmt.Println(nivelAcessoUser)
 
 	user, err := PerfilConfigHandler(r)
 
@@ -117,11 +123,12 @@ func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 	usuarios := UsuariosCarregaHandler(r)
 
 	data := map[string]interface{}{
-		"searchPath":  searchPath,
-		"user":        user,
-		"mensagem":    mensagens,
-		"organizacao": organizacao,
-		"usuarios":    usuarios,
+		"searchPath":      searchPath,
+		"user":            user,
+		"mensagem":        mensagens,
+		"organizacao":     organizacao,
+		"usuarios":        usuarios,
+		"nivelAcessoUser": nivelAcessoUser,
 	}
 
 	templates.ExecuteTemplate(w, "configuracoes.html", data)
