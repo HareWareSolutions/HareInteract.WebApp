@@ -52,8 +52,10 @@ func PerfilConfigExcluirHandler(w http.ResponseWriter, r *http.Request) {
 
 //Handlers de Mensagem
 
-func MensagemCarregaHandler() []IAM.Mensagem {
-	data := IAM.ObterMensagens()
+func MensagemCarregaHandler(r *http.Request) []IAM.Mensagem {
+	userId := r.Context().Value(userIdKey).(int)
+
+	data := IAM.ObterMensagens(userId)
 
 	return data
 }
@@ -135,8 +137,6 @@ func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("searchInput")
 	id := r.Context().Value(userIdKey).(int)
 
-	fmt.Println("User name:", username)
-
 	usuarioOrigem := IAM.ObterUsuarioOrgPublicoPorUsuario(id)
 
 	usuarioDestino, err := IAM.ObterUsuarioPorUsername(username)
@@ -144,6 +144,16 @@ func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Erro ao buscar usuário: ", err)
 		http.Error(w, "Erro ao buscar usuário. Verifique se o Username está correto.", http.StatusForbidden)
+		return
+	}
+
+	//Validar se o usuário a convidar está participando de uma organização
+
+	usuarioDestinoOrg := IAM.ObterUsuarioOrganizacaoPorUsuario(usuarioDestino.Id)
+
+	if usuarioDestinoOrg.Id == usuarioDestino.Id {
+		http.Error(w, "Usuário convidado já pertence a uma organização! ", http.StatusForbidden)
+		log.Printf("Usuário convidado já pertence a uma organização! ")
 		return
 	}
 

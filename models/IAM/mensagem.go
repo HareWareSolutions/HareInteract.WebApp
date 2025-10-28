@@ -50,15 +50,26 @@ func DeletarMensagem(id int) {
 	defer db.Close()
 }
 
-func ObterMensagens() []Mensagem {
+func ObterMensagens(id_destinatario int) []Mensagem {
 	db := db.ConectaBD("public")
 
-	statement := "SELECT * FROM mensagens"
+	//idUser := r.Context().Value(userIdKey)
 
-	rows, err := db.Query(statement)
+	statement, err := db.Prepare("SELECT * FROM mensagens where id_destinatario = $1")
+
 	if err != nil {
-		panic(err.Error())
+		log.Println("Erro ao preparar statement (mensagem.ObterMensagens):", err)
+		return nil
 	}
+
+	defer statement.Close()
+
+	rows, err := statement.Query(id_destinatario)
+	if err != nil {
+		log.Println("Erro ao executar query (mensagem.ObterMensagens): ", err)
+		return nil
+	}
+
 	defer rows.Close()
 
 	mensagens := []Mensagem{}

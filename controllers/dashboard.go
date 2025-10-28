@@ -110,7 +110,7 @@ func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mensagens := MensagemCarregaHandler()
+	mensagens := MensagemCarregaHandler(r)
 
 	organizacao := OrganizacaoCarregaHandler(r)
 
