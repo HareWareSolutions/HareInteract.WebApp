@@ -1,8 +1,10 @@
 package IAM
 
 import (
-	"HareInteract.WebApp/db"
+	"fmt"
 	"time"
+
+	"HareInteract.WebApp/db"
 )
 
 type Organizacao struct {
@@ -78,14 +80,16 @@ func ObterOrganizacao(id string) Organizacao {
 	return organizacaoParaEditar
 }
 
-func AtualizarOrganizacao(id int, nome string, responsavelId int, cpfcnpj, pais, cidade, estado, telefone string) {
+func AtualizarOrganizacao(id int, nome string, cpfcnpj, pais, cidade, estado, telefone string) {
 	db := db.ConectaBD("public")
 	defer db.Close()
 
-	OrganizacaoAtualizada, err := db.Prepare("update organizacao set nome=$1, responsavel=$2, cpfcnpj=$3, pais=$4, cidade=$5, estado=$6, telefone=$7 where id = $8")
+	OrganizacaoAtualizada, err := db.Prepare("update organizacao set nome=$1, cpfcnpj=$2, pais=$3, cidade=$4, estado=$5, telefone=$6 where id = $7")
 	if err != nil {
 		panic(err.Error())
 	}
 
-	OrganizacaoAtualizada.Exec(nome, responsavelId, cpfcnpj, pais, cidade, estado, telefone, id)
+	fmt.Println("Dados recebidos: (AtualizarOrganizacao)", nome, cpfcnpj, pais, cidade, estado, telefone, id)
+
+	OrganizacaoAtualizada.Exec(nome, cpfcnpj, pais, cidade, estado, telefone, id)
 }

@@ -24,6 +24,7 @@ func CarregaRotas() {
 	http.HandleFunc("/configuracoes/excluir/usuario", controllers.AuthMiddleware(controllers.PerfilConfigExcluirHandler))
 	http.HandleFunc("/configuracoes/excluirMensagem", controllers.AuthMiddleware(controllers.MensagemExcluirHandler))
 	http.HandleFunc("/configuracoes/salvarUserOrg", controllers.AuthMiddleware(controllers.UsuarioAtualizaHandler))
+	http.HandleFunc("/configuracoes/atualizarorganizacao", controllers.AuthMiddleware(controllers.OrganizacaoAtualizaHandler))
 	http.HandleFunc("/configuracoes/excluirUsuarioOrganizacao", controllers.AuthMiddleware(controllers.UsuarioExcluirHandler))
 	http.HandleFunc("/configuracoes/sairOrganizacao", controllers.AuthMiddleware(controllers.UsuarioSairOrganizacao))
 	http.HandleFunc("/configuracoes/convidar", controllers.AuthMiddleware(controllers.UsuarioConvidarOrganizacao))

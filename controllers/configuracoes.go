@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"HareInteract.WebApp/models/IAM"
 )
@@ -80,6 +81,22 @@ func OrganizacaoCarregaHandler(r *http.Request) IAM.Organizacao {
 	org := IAM.ObterOrganizacao(strconv.Itoa(userOrg.Organizacao))
 
 	return org
+}
+
+func OrganizacaoAtualizaHandler(w http.ResponseWriter, r *http.Request) {
+
+	idOrg, _ := strconv.Atoi(r.FormValue("id"))
+	nome := r.FormValue("nome")
+	cpfcnpj := r.FormValue("documento")
+	endereco := r.FormValue("endereco")
+	listaEndereco := strings.Split(endereco, ",")
+	cidade := strings.TrimSpace(listaEndereco[0])
+	estado := strings.TrimSpace(listaEndereco[1])
+	pais := strings.TrimSpace(listaEndereco[2])
+	telefone := r.FormValue("telefone")
+	fmt.Println(cidade, estado, pais)
+
+	IAM.AtualizarOrganizacao(idOrg, nome, cpfcnpj, pais, cidade, estado, telefone)
 }
 
 // Handlers de Usuarios
