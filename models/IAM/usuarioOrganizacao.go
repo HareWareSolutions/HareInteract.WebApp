@@ -124,23 +124,31 @@ func ObterUsuarioOrganizacao(id int) UsuarioOrganizacao {
 	return usuarioOrganizacaoParaEditar
 }
 
-func ObterUsuarioOrganizacaoPorUsuario(usuarioId int) UsuarioOrganizacao {
+func ObterUsuarioOrganizacaoPorUsuario(usuarioId int) (*UsuarioOrganizacao, error) {
 	db := db.ConectaBD("public")
 
 	usuarioOrganizacaoRecuperado := UsuarioOrganizacao{}
 
 	row := db.QueryRow("select id, usuario, organizacao, nivel_acesso from usuario_organizacao where usuario = $1", usuarioId)
 
-	err := row.Scan(&usuarioOrganizacaoRecuperado.Id,
+	err := row.Scan(
+		&usuarioOrganizacaoRecuperado.Id,
 		&usuarioOrganizacaoRecuperado.Usuario,
 		&usuarioOrganizacaoRecuperado.Organizacao,
-		&usuarioOrganizacaoRecuperado.NivelAcesso)
+		&usuarioOrganizacaoRecuperado.NivelAcesso,
+	)
+
 	if err != nil {
-		log.Printf("Erro na chamada função: (ObterUsuarioOrganizacaoPorUsuario) %v", err)
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		log.Printf("Erro na chamada de função (ObterUsuarioOrganizacaoPorUsuario) para usuarioId %d: %v", usuarioId, err)
+		return nil, fmt.Errorf("falha ao obter UsuarioOrganizacao para ID %d: %w", usuarioId, err)
 	}
 
 	defer db.Close()
-	return usuarioOrganizacaoRecuperado
+	return &usuarioOrganizacaoRecuperado, nil
 }
 
 func AtualizarUsuarioOrganizacao(id, usuario, organizacao int, nivelAcesso string) {
