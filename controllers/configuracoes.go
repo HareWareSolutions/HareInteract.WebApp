@@ -188,4 +188,6 @@ func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 	IAM.CriarMensagem(mensagem.Id_remetente, mensagem.Id_destinatario, mensagem.Mensagem_conteudo, mensagem.Urgencia, mensagem.Tipo)
 
 	fmt.Println("Mensagem enviada!")
+
+	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
