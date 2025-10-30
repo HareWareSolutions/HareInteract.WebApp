@@ -71,6 +71,10 @@ func MensagemExcluirHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
 
+//func MensagemAceitaConvite(w http.ResponseWriter, r *http.Request) {
+
+//}
+
 // Handlers de Organização
 
 func OrganizacaoCarregaHandler(r *http.Request) IAM.Organizacao {
@@ -160,6 +164,8 @@ func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 
 	usuarioDestino, err := IAM.ObterUsuarioPorUsername(username)
 
+	nivelAcessoConvidado := r.FormValue("nivelAcesso")
+
 	if err != nil {
 		log.Printf("Erro ao buscar usuário: ", err)
 		http.Error(w, "Erro ao buscar usuário. Verifique se o Username está correto.", http.StatusForbidden)
@@ -167,10 +173,10 @@ func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Validar se o usuário a convidar está participando de uma organização
+	fmt.Println(usuarioDestino.Id)
+	usuarioDestinoOrg := IAM.ObterUsuarioOrganizacaoPorUsuario(usuarioDestino.Id) //validação errada
 
-	usuarioDestinoOrg := IAM.ObterUsuarioOrganizacaoPorUsuario(usuarioDestino.Id)
-
-	if usuarioDestinoOrg.Id == usuarioDestino.Id {
+	if usuarioDestinoOrg.Usuario == usuarioDestino.Id {
 		http.Error(w, "Usuário convidado já pertence a uma organização! ", http.StatusForbidden)
 		log.Printf("Usuário convidado já pertence a uma organização! ")
 		return
@@ -185,9 +191,11 @@ func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 	mensagem.Mensagem_conteudo = conteudo_mensagem
 	mensagem.Urgencia = "Alta"
 	mensagem.Tipo = "Convite"
-	IAM.CriarMensagem(mensagem.Id_remetente, mensagem.Id_destinatario, mensagem.Mensagem_conteudo, mensagem.Urgencia, mensagem.Tipo)
+	mensagem.IdOrganizacaoConvite = usuarioOrigem.Organizacao
+	mensagem.NivelAcessoUsuarioConvidado = nivelAcessoConvidado
+	IAM.CriarConvite(mensagem.Id_remetente, mensagem.Id_destinatario, mensagem.Mensagem_conteudo, mensagem.Urgencia, mensagem.Tipo, mensagem.IdOrganizacaoConvite, mensagem.NivelAcessoUsuarioConvidado)
 
-	fmt.Println("Mensagem enviada!")
+	fmt.Println("Convite enviado!")
 
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }

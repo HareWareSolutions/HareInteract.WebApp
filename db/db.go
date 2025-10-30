@@ -211,7 +211,9 @@ func InicializaTabelas(db *sql.DB, search_path string) {
             conteudo_mensagem VARCHAR(1000) NOT NULL,
             data_envio TIMESTAMP NOT NULL,
             status BOOLEAN NOT NULL,
-            urgencia VARCHAR(10)
+            urgencia VARCHAR(10),
+            id_organizacao_convite INTEGER DEFAULT 0,
+            nivel_acesso VARCHAR(20) DEFAULT 'NONE'
          );`, schemaPrefix, schemaPrefix, schemaPrefix),
 	}
 

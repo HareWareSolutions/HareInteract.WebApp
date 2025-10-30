@@ -211,3 +211,12 @@ button{
     color: #888;
     font-size: 24px;
 }
+
+#actionTable{
+    display: flex;
+}
+
+#select-nivelAcesso{
+    background: none;
+    border-color: #888;
+}

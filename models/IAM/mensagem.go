@@ -8,14 +8,16 @@ import (
 )
 
 type Mensagem struct {
-	Id                int
-	Id_remetente      int
-	Id_destinatario   int
-	Mensagem_conteudo string
-	Data_envio        time.Time
-	Status            bool
-	Urgencia          string
-	Tipo              string
+	Id                          int
+	Id_remetente                int
+	Id_destinatario             int
+	Mensagem_conteudo           string
+	Data_envio                  time.Time
+	Status                      bool
+	Urgencia                    string
+	Tipo                        string
+	IdOrganizacaoConvite        int
+	NivelAcessoUsuarioConvidado string
 }
 
 func CriarMensagem(id_remetente int, id_destinatario int, mensagem_conteudo string, urgencia string, tipo string) {
@@ -23,7 +25,7 @@ func CriarMensagem(id_remetente int, id_destinatario int, mensagem_conteudo stri
 	data_envio := time.Now()
 	status := false
 
-	inserirMensagem, err := db.Prepare("insert into mensagens(id_remetente, id_destinatario, conteudo_mensagem, data_envio, status, urgencia,  tipo) values($1, $2, $3, $4, $5, $6, $7)")
+	inserirMensagem, err := db.Prepare("insert into mensagens(id_remetente, id_destinatario, conteudo_mensagem, data_envio, status, urgencia,  tipo) values($1, $2, $3, $4, $5)")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -32,6 +34,26 @@ func CriarMensagem(id_remetente int, id_destinatario int, mensagem_conteudo stri
 
 	if err != nil {
 		log.Printf("Erro ao criar mensagem: ", err)
+		return
+	}
+
+	defer db.Close()
+}
+
+func CriarConvite(id_remetente int, id_destinatario int, mensagem_conteudo string, urgencia string, tipo string, id_organizacao_convite int, nivel_acesso string) {
+	db := db.ConectaBD("public")
+	data_envio := time.Now()
+	status := false
+
+	inserirMensagem, err := db.Prepare("insert into mensagens(id_remetente, id_destinatario, conteudo_mensagem, data_envio, status, urgencia,  tipo, id_organizacao_convite, nivel_acesso) values($1, $2, $3, $4, $5, $6, $7)")
+	if err != nil {
+		log.Println("Erro execução função CriarConvite :", err)
+	}
+
+	_, err = inserirMensagem.Exec(id_remetente, id_destinatario, mensagem_conteudo, data_envio, status, urgencia, tipo, id_organizacao_convite, nivel_acesso)
+
+	if err != nil {
+		log.Println("Erro ao inserir mensagem: ", err)
 		return
 	}
 
@@ -77,7 +99,7 @@ func ObterMensagens(id_destinatario int) []Mensagem {
 	for rows.Next() {
 		var m Mensagem
 
-		err := rows.Scan(&m.Id, &m.Id_remetente, &m.Id_destinatario, &m.Mensagem_conteudo, &m.Data_envio, &m.Status, &m.Urgencia, &m.Tipo)
+		err := rows.Scan(&m.Id, &m.Id_remetente, &m.Id_destinatario, &m.Mensagem_conteudo, &m.Data_envio, &m.Status, &m.Urgencia, &m.Tipo, &m.IdOrganizacaoConvite, &m.NivelAcessoUsuarioConvidado)
 
 		if err != nil {
 			log.Printf("Erro escanear linha: ", err)

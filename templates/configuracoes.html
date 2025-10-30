@@ -117,13 +117,21 @@
                   {{ else }}
                   <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric"><span class="material-symbols-outlined icon">visibility_off</span></td>
                   {{ end }}
-                  <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric">
+                  <td class="mdc-data-table__cell mdc-data-table__cell--non-numeric" id="actionTable">
                     <form method="POST" action="/configuracoes/excluirMensagem" onsubmit="return confirm('Tem certeza que deseja excluir a mensagem?')">
                       <input type="hidden" name="id" value="{{ .Id }}">
                       <button type="submit"  style="background: none; border: none; padding: 0">
                         <span class="material-symbols-outlined icon">delete</span>
                       </button>
                     </form>
+                    {{ if eq .Tipo "Convite" }}
+                    <form method="post" action="/configuracoes/aceitarConvite" onsubmit="return confirm('Tem certeza que deseja aceitar o convite?')">
+                      <input type="hidden" name="remetente" value="{{ .Id_remetente }}">
+                      <button type="submit" style="background: none; border: none; padding: 0;">
+                        <span class="material-symbols-outlined icon">check</span>
+                      </button>
+                    </form>
+                    {{ end }}
                   </td>
                 </tr>
               {{ end }}
@@ -178,8 +186,15 @@
             </tbody>
           </table>
         </div>
-
+		<br>
         <form id="Frm-inviteUserOrg" action="/configuracoes/convidar" method="POST">
+		  <label for="select-nivelAcesso">Selecione o nível acesso do novo usuário:</label>
+          <select name="nivelAcesso" id="select-nivelAcesso">
+			<option value="Gerente">Gerente</option>
+			<option value="Vendedor">Vendedor</option>
+			<option value="Suporte">Suporte</option>
+			<option value="TI">TI</option>
+		  </select>
           <div class="search-container">
             <input type="text" id="searchInput" placeholder="Pesquisar..." class="search-input" name="searchInput">
             <button type="submit" style="background: none; border: none; padding: 0"><span class="material-symbols-outlined add-icon">person_add</span></button>
