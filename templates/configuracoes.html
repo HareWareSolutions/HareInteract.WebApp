@@ -77,7 +77,7 @@
         <div class="profile-form">
           <p>Configure as informações e preferências da sua empresa.</p>
           <form action="/configuracoes/atualizarorganizacao" method="POST" onsubmit="return confirm('Tem ccerteza que deseja atualizar a Organização com os dados informados?')">
-            <md-filled-text-field label="Id" name="id" value="{{ .organizacao.Id }}" hidden></md-filled-text-field>
+            <label label="Id" name="id" value="{{ .organizacao.Id }}" type="hidden"></label>
             <md-filled-text-field label="Organização" name="nome" value="{{ .organizacao.Nome }}" ></md-filled-text-field>
             <md-filled-text-field label="CPF/CNPJ" name="documento" value="{{ .organizacao.Cpfcnpj }}" ></md-filled-text-field>
             <md-filled-text-field label="Endereço" name="endereco" value="{{ .organizacao.Cidade }}, {{ .organizacao.Estado }}, {{ .organizacao.Pais }}" ></md-filled-text-field>

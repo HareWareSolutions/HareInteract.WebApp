@@ -97,6 +97,8 @@ func OrganizacaoAtualizaHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(cidade, estado, pais)
 
 	IAM.AtualizarOrganizacao(idOrg, nome, cpfcnpj, pais, cidade, estado, telefone)
+
+	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
 
 // Handlers de Usuarios
