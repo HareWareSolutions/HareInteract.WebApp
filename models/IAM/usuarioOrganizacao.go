@@ -124,7 +124,7 @@ func ObterUsuarioOrganizacao(id int) UsuarioOrganizacao {
 	return usuarioOrganizacaoParaEditar
 }
 
-func ObterUsuarioOrganizacaoPorUsuario(usuarioId int) (*UsuarioOrganizacao, error) {
+func ObterUsuarioOrganizacaoPorUsuario(usuarioId int) UsuarioOrganizacao {
 	db := db.ConectaBD("public")
 
 	usuarioOrganizacaoRecuperado := UsuarioOrganizacao{}
@@ -140,15 +140,15 @@ func ObterUsuarioOrganizacaoPorUsuario(usuarioId int) (*UsuarioOrganizacao, erro
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return UsuarioOrganizacao{}
 		}
 
 		log.Printf("Erro na chamada de função (ObterUsuarioOrganizacaoPorUsuario) para usuarioId %d: %v", usuarioId, err)
-		return nil, fmt.Errorf("falha ao obter UsuarioOrganizacao para ID %d: %w", usuarioId, err)
+
 	}
 
 	defer db.Close()
-	return &usuarioOrganizacaoRecuperado, nil
+	return usuarioOrganizacaoRecuperado
 }
 
 func AtualizarUsuarioOrganizacao(id, usuario, organizacao int, nivelAcesso string) {
