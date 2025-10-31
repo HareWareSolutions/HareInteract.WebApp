@@ -18,7 +18,7 @@ func ConectaBD(search_path string) *sql.DB {
 		search_path = "C" + search_path
 	}
 
-	conexao := fmt.Sprintf("user=postgres dbname=HareInteractCRM password=12345 host=localhost sslmode=disable search_path=%s,public", search_path)
+	conexao := fmt.Sprintf("user=postgres dbname=HareInteractCRM password=HareWare@2024 host=localhost sslmode=disable search_path=%s,public", search_path)
 
 	db, err := sql.Open("postgres", conexao)
 	if err != nil {
@@ -37,6 +37,7 @@ func ConectaBD(search_path string) *sql.DB {
 	}
 
 	InicializaTabelas(db, search_path)
+	AtualizaEstrutura(db)
 
 	return db
 }
@@ -44,12 +45,9 @@ func ConectaBD(search_path string) *sql.DB {
 func InicializaTabelas(db *sql.DB, search_path string) {
 	log.Println("Verificando e inicializando tabelas do banco de dados...")
 
-	// Prefixo do schema para cada nome de tabela
 	schemaPrefix := fmt.Sprintf("%s.", search_path)
 
-	// Lista de instruções SQL para criar cada tabela individualmente
 	createTableStatements := []string{
-		// Tabela de Usuários
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %susuario (
            id SERIAL PRIMARY KEY,
@@ -60,7 +58,6 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            ativo BOOLEAN NOT NULL
         );`, schemaPrefix),
 
-		// Tabela de Organizações
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %sorganizacao (
            id SERIAL PRIMARY KEY,
@@ -74,7 +71,6 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            data_cadastro TIMESTAMP NOT NULL
         );`, schemaPrefix, schemaPrefix),
 
-		// Tabela de Relação Usuário-Organização
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %susuario_organizacao (
            id SERIAL PRIMARY KEY,
@@ -85,7 +81,6 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            UNIQUE (usuario, organizacao)
         );`, schemaPrefix, schemaPrefix, schemaPrefix),
 
-		// Tabela de Credenciais
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %scredencial (
            id SERIAL PRIMARY KEY,
@@ -96,7 +91,6 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            assistantId VARCHAR(255)
         );`, schemaPrefix),
 
-		// Tabela de Empresas
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %sempresa (
            id SERIAL PRIMARY KEY,
@@ -111,7 +105,6 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            setor VARCHAR(255) NOT NULL
         );`, schemaPrefix),
 
-		// Tabela de Contatos
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %scontato (
            id SERIAL PRIMARY KEY,
@@ -121,10 +114,11 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            cargo VARCHAR(255) NOT NULL,
            email VARCHAR(255),
            telefone VARCHAR(20) NOT NULL,
-           responsavel INTEGER NOT NULL REFERENCES %susuario(id)
+           responsavel INTEGER NOT NULL REFERENCES %susuario(id),
+           pausa BOOLEAN NOT NULL,
+           thread_id VARCHAR(255) NOT NULL
         );`, schemaPrefix, schemaPrefix, schemaPrefix),
 
-		// Tabela de Leads
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %slead (
            id SERIAL PRIMARY KEY,
@@ -134,10 +128,11 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            empresa VARCHAR(255),
            origem VARCHAR(255),
            status VARCHAR(50) NOT NULL,
-           responsavel INTEGER NOT NULL REFERENCES %susuario(id)
+           responsavel INTEGER NOT NULL REFERENCES %susuario(id),
+           pausa BOOLEAN NOT NULL,
+           thread_id VARCHAR(255) NOT NULL
         );`, schemaPrefix, schemaPrefix),
 
-		// Tabela de Oportunidades
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %soportunidade (
            id SERIAL PRIMARY KEY,
@@ -152,7 +147,6 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            data_criacao TIMESTAMP NOT NULL
         );`, schemaPrefix, schemaPrefix, schemaPrefix, schemaPrefix),
 
-		// Tabela de Campanhas
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %scampanha (
            id SERIAL PRIMARY KEY,
@@ -165,7 +159,6 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            responsavel INTEGER NOT NULL REFERENCES %susuario(id)
         );`, schemaPrefix, schemaPrefix),
 
-		// Tabela de Membros de Campanha
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %scampanha_membros (
            id SERIAL PRIMARY KEY,
@@ -176,7 +169,6 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            CONSTRAINT chk_lead_or_contato CHECK ((lead IS NOT NULL AND contato IS NULL) OR (lead IS NULL AND contato IS NOT NULL))
         );`, schemaPrefix, schemaPrefix, schemaPrefix, schemaPrefix),
 
-		// Tabela de Atividades
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %satividade (
            id SERIAL PRIMARY KEY,
@@ -188,7 +180,18 @@ func InicializaTabelas(db *sql.DB, search_path string) {
            data_criacao TIMESTAMP NOT NULL
         );`, schemaPrefix),
 
-		// Tabela de Tickets
+		fmt.Sprintf(`
+		CREATE TABLE IF NOT EXISTS %sagendamento (
+			id SERIAL PRIMARY KEY,
+			data DATE NOT NULL,
+			hora TIME NOT NULL,
+			contato_id INTEGER NOT NULL REFERENCES %scontato(id) ON DELETE CASCADE,
+			usuario_id INTEGER NOT NULL REFERENCES %susuario(id) ON DELETE CASCADE,
+			confirmacao BOOLEAN NOT NULL,
+			observacao TEXT NOT NULL,
+			link TEXT
+		);`, schemaPrefix, schemaPrefix, schemaPrefix),
+
 		fmt.Sprintf(`
         CREATE TABLE IF NOT EXISTS %sticket (
            id SERIAL PRIMARY KEY,
@@ -215,9 +218,16 @@ func InicializaTabelas(db *sql.DB, search_path string) {
             id_organizacao_convite INTEGER DEFAULT 0,
             nivel_acesso VARCHAR(20) DEFAULT 'NONE'
          );`, schemaPrefix, schemaPrefix, schemaPrefix),
+
+		fmt.Sprintf(`
+		CREATE TABLE IF NOT EXISTS %sfuncao (
+			id SERIAL PRIMARY KEY,
+			titulo TEXT NOT NULL,
+			descricao TEXT NOT NULL,
+			chamada TEXT NOT NULL
+		);`, schemaPrefix),
 	}
 
-	// Executa cada instrução de criação de tabela
 	for _, stmt := range createTableStatements {
 		_, err := db.Exec(stmt)
 		if err != nil {
@@ -226,4 +236,129 @@ func InicializaTabelas(db *sql.DB, search_path string) {
 	}
 
 	log.Println("Todas as tabelas foram verificadas e inicializadas com sucesso.")
+}
+
+func AtualizaEstrutura(db *sql.DB) {
+	log.Println("Iniciando verificação de atualizações de estrutura em todos os schemas...")
+
+	// 1- Buscar todos os schemas válidos (exceto os padrões do PostgreSQL)
+	rows, err := db.Query(`
+		SELECT schema_name 
+		FROM information_schema.schemata 
+		WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'public')
+		ORDER BY schema_name;
+	`)
+	if err != nil {
+		log.Fatalf("Erro ao listar schemas: %v", err)
+	}
+	defer rows.Close()
+
+	var schemas []string
+	for rows.Next() {
+		var schema string
+		if err := rows.Scan(&schema); err != nil {
+			log.Printf("Erro ao ler schema: %v", err)
+			continue
+		}
+		schemas = append(schemas, schema)
+	}
+
+	if len(schemas) == 0 {
+		log.Println("Nenhum schema customizado encontrado para atualizar.")
+		return
+	}
+
+	// 2- Executar scripts de atualização em cada schema encontrado
+	for _, schema := range schemas {
+		schemaPrefix := fmt.Sprintf("%s.", schema)
+		log.Printf("Atualizando estrutura no schema: %s", schema)
+
+		scripts := []string{
+			// Adicionar campo "pausa" em LEAD
+			fmt.Sprintf(`
+				DO $$
+				BEGIN
+					IF NOT EXISTS (
+						SELECT 1 FROM information_schema.columns
+						WHERE table_schema = '%s' AND table_name = 'lead' AND column_name = 'pausa'
+					) THEN
+						ALTER TABLE %slead ADD COLUMN pausa BOOLEAN DEFAULT FALSE;
+					END IF;
+				END$$;`, schema, schemaPrefix),
+
+			// Adicionar campo "thread_id" em LEAD
+			fmt.Sprintf(`
+				DO $$
+				BEGIN
+					IF NOT EXISTS (
+						SELECT 1 FROM information_schema.columns
+						WHERE table_schema = '%s' AND table_name = 'lead' AND column_name = 'thread_id'
+					) THEN
+						ALTER TABLE %slead ADD COLUMN thread_id VARCHAR(255);
+					END IF;
+				END$$;`, schema, schemaPrefix),
+
+			// Adicionar campo "pausa" em CONTATO
+			fmt.Sprintf(`
+				DO $$
+				BEGIN
+					IF NOT EXISTS (
+						SELECT 1 FROM information_schema.columns
+						WHERE table_schema = '%s' AND table_name = 'contato' AND column_name = 'pausa'
+					) THEN
+						ALTER TABLE %scontato ADD COLUMN pausa BOOLEAN DEFAULT FALSE;
+					END IF;
+				END$$;`, schema, schemaPrefix),
+
+			// Adicionar campo "thread_id" em CONTATO
+			fmt.Sprintf(`
+				DO $$
+				BEGIN
+					IF NOT EXISTS (
+						SELECT 1 FROM information_schema.columns
+						WHERE table_schema = '%s' AND table_name = 'contato' AND column_name = 'thread_id'
+					) THEN
+						ALTER TABLE %scontato ADD COLUMN thread_id VARCHAR(255);
+					END IF;
+				END$$;`, schema, schemaPrefix),
+
+			// Adicionar campo "id_organizacao_convite" em MENSAGENS
+			fmt.Sprintf(`
+				DO $$
+				BEGIN
+					IF NOT EXISTS (
+						SELECT 1 FROM information_schema.columns
+						WHERE table_schema = '%s' AND table_name = 'mensagens' AND column_name = 'id_organizacao_convite'
+					) THEN
+						ALTER TABLE %smensagens ADD COLUMN id_organizacao_convite INTEGER DEFAULT 0;
+					END IF;
+				END$$;`, schema, schemaPrefix),
+
+			// Adicionar campo "nivel_acesso" em MENSAGENS
+			fmt.Sprintf(`
+				DO $$
+				BEGIN
+					IF NOT EXISTS (
+						SELECT 1 FROM information_schema.columns
+						WHERE table_schema = '%s' AND table_name = 'mensagens' AND column_name = 'nivel_acesso'
+					) THEN
+						ALTER TABLE %smensagens ADD COLUMN nivel_acesso VARCHAR(20) DEFAULT 'NONE';
+					END IF;
+				END$$;`, schema, schemaPrefix),
+		}
+
+		for i, script := range scripts {
+			log.Printf("Executando script %d no schema %s...", i+1, schema)
+			_, err := db.Exec(script)
+			if err != nil {
+				log.Printf("Erro ao aplicar script %d em %s: %v", i+1, schema, err)
+			} else {
+				log.Printf("Script %d aplicado com sucesso em %s", i+1, schema)
+			}
+		}
+
+		log.Printf("Estrutura atualizada com sucesso no schema: %s", schema)
+	}
+
+	log.Println("Atualizações de estrutura concluídas para todos os schemas.")
 }
