@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"HareInteract.WebApp/db"
+	"HareInteract.WebApp/models/apperr"
 )
 
 type Usuario struct {
@@ -17,28 +18,52 @@ type Usuario struct {
 	Ativo    bool   `json:"ativo"`
 }
 
-func CriarUsuario(nome, email, username, senha string) {
+func CriarUsuario(nome, email, username, senha string) error {
 	db := db.ConectaBD("public")
-
+	defer db.Close()
 	cadastrarUsuario, err := db.Prepare("insert into usuario(nome, email, username, senha, ativo) values($1, $2, $3, $4, $5)")
 	if err != nil {
-		panic(err.Error())
+		return &apperr.Erro{
+			Mensagem: "Falha ao preparar query de inserção!",
+			Causa:    err,
+		}
 	}
 
-	cadastrarUsuario.Exec(nome, email, username, senha, true)
-	defer db.Close()
+	cadastrarUsuario.Close()
+
+	_, err = cadastrarUsuario.Exec(nome, email, username, senha, true)
+
+	if err != nil {
+		return &apperr.Erro{
+			Mensagem: "Erro ao executar a inserção do usuário!",
+			Causa:    err,
+		}
+	}
+
+	return nil //Sucesso bb
 }
 
-func DeletaUsuario(id string) {
+func DeletaUsuario(id string) error {
 	db := db.ConectaBD("public")
+	defer db.Close()
 
 	deletarUsuario, err := db.Prepare("delete from usuario where id=$1")
 	if err != nil {
-		panic(err.Error())
+		return &apperr.Erro{
+			Mensagem: "Erro ao preparar query de remoção!",
+			Causa:    err,
+		}
 	}
 
-	deletarUsuario.Exec(id)
-	defer db.Close()
+	_, err = deletarUsuario.Exec(id)
+	if err != nil {
+		return &apperr.Erro{
+			Mensagem: "Erro ao remover usuário!",
+			Causa:    err,
+		}
+	}
+
+	return nil //Sucesso bb
 }
 
 func ObterUsuarios() []Usuario {

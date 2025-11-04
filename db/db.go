@@ -18,7 +18,7 @@ func ConectaBD(search_path string) *sql.DB {
 		search_path = "C" + search_path
 	}
 
-	conexao := fmt.Sprintf("user=postgres dbname=HareInteractCRM password=HareWare@2024 host=localhost sslmode=disable search_path=%s,public", search_path)
+	conexao := fmt.Sprintf("user=postgres dbname=HareInteractCRM password=12345 host=localhost sslmode=disable search_path=%s,public", search_path)
 
 	db, err := sql.Open("postgres", conexao)
 	if err != nil {
@@ -243,11 +243,13 @@ func AtualizaEstrutura(db *sql.DB) {
 
 	// 1- Buscar todos os schemas válidos (exceto os padrões do PostgreSQL)
 	rows, err := db.Query(`
-		SELECT schema_name 
-		FROM information_schema.schemata 
-		WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'public')
-		ORDER BY schema_name;
-	`)
+      SELECT schema_name 
+      FROM information_schema.schemata 
+      WHERE schema_name NOT LIKE 'pg_%' 
+        AND schema_name <> 'information_schema' 
+      ORDER BY schema_name;
+   `)
+
 	if err != nil {
 		log.Fatalf("Erro ao listar schemas: %v", err)
 	}
