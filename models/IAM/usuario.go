@@ -66,14 +66,18 @@ func DeletaUsuario(id string) error {
 	return nil //Sucesso bb
 }
 
-func ObterUsuarios() []Usuario {
+func ObterUsuarios() ([]Usuario, error) {
 	db := db.ConectaBD("public")
+	defer db.Close()
 
-	statement := "select * from usuario"
+	statement := "select id, nome, username, senha, ativo from usuario"
 
 	rows, err := db.Query(statement)
 	if err != nil {
-		panic(err.Error())
+		return nil, &apperr.Erro{
+			Mensagem: "Falha ao executar a query de busca de usuários",
+			Causa:    err,
+		}
 	}
 
 	defer rows.Close()
@@ -93,92 +97,119 @@ func ObterUsuarios() []Usuario {
 
 		usuarios = append(usuarios, u)
 
-		if err = rows.Err(); err != nil {
-			log.Fatal("Erro na iteração das linhas: %v", err)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, &apperr.Erro{
+			Mensagem: "Erro na leitura dos resultados da busca por usuários",
+			Causa:    err,
 		}
 	}
 
-	return usuarios
+	return usuarios, nil
 
 }
 
-func ObterUsuario(id int) Usuario {
+func ObterUsuario(id int) (*Usuario, error) {
 	db := db.ConectaBD("public")
-
-	usuario, err := db.Query("select * from usuario where id=$1", id)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	usuarioParaEditar := Usuario{}
-
-	for usuario.Next() {
-		var id int
-		var nome, email, username, senha string
-		var ativo bool
-
-		err = usuario.Scan(&id, &nome, &email, &username, &senha, &ativo)
-		if err != nil {
-			panic(err.Error())
-		}
-
-		usuarioParaEditar.Id = id
-		usuarioParaEditar.Nome = nome
-		usuarioParaEditar.Email = email
-		usuarioParaEditar.Username = username
-		usuarioParaEditar.Senha = senha
-		usuarioParaEditar.Ativo = ativo
-	}
 	defer db.Close()
-	return usuarioParaEditar
+
+	var u Usuario
+
+	row := db.QueryRow("select id, nome, email, username, senha, ativo from usuario where id=$1", id)
+
+	err := row.Scan(&u.Id, &u.Nome, &u.Email, &u.Username, &u.Senha, &u.Ativo)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, &apperr.Erro{
+				Mensagem: "Nenhum registro encontrado!",
+			}
+		} else {
+			return nil, &apperr.Erro{
+				Mensagem: "Falha ao consultar usuário no banco de dados!",
+				Causa:    err,
+			}
+		}
+	}
+
+	return &u, nil
 }
 
-func ObterUsuarioPorUsername(username string) (Usuario, error) {
+func ObterUsuarioPorUsername(username string) (*Usuario, error) {
 	db := db.ConectaBD("public")
+	defer db.Close()
+
+	var u Usuario
 
 	row := db.QueryRow("SELECT id, username, senha, ativo FROM usuario WHERE username = $1", username)
 
-	var usuario Usuario
-
-	err := row.Scan(&usuario.Id, &usuario.Username, &usuario.Senha, &usuario.Ativo)
+	err := row.Scan(&u.Id, &u.Username, &u.Senha, &u.Ativo)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return Usuario{}, fmt.Errorf("usuário '%s' não encontrado", username)
+			return nil, &apperr.Erro{
+				Mensagem: "Nenhum registro encontrado!",
+			}
+		} else {
+			return nil, &apperr.Erro{
+				Mensagem: "Falha ao consultar usuário no banco de dados!",
+				Causa:    err,
+			}
 		}
-		return Usuario{}, fmt.Errorf("erro ao buscar usuário: %v", err)
+
 	}
 
-	defer db.Close()
-	return usuario, nil
+	return &u, nil
 }
 
-func LoginUsuario(username string) (Usuario, error) {
+func LoginUsuario(username string) (*Usuario, error) {
 	db := db.ConectaBD("public")
+	defer db.Close()
 
 	row := db.QueryRow("SELECT id, username, senha, ativo FROM usuario WHERE username = $1", username)
 
-	var usuario Usuario
+	var u Usuario
 
-	err := row.Scan(&usuario.Id, &usuario.Username, &usuario.Senha, &usuario.Ativo)
+	err := row.Scan(&u.Id, &u.Username, &u.Senha, &u.Ativo)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return Usuario{}, fmt.Errorf("usuário '%s' não encontrado", username)
+			return nil, &apperr.Erro{
+				Mensagem: "Usuário não cadastrado!",
+			}
+		} else {
+			return nil, &apperr.Erro{
+				Mensagem: "Falha ao consultar usuário no banco de dados!",
+				Causa:    err,
+			}
 		}
-		return Usuario{}, fmt.Errorf("erro ao buscar usuário: %v", err)
+
 	}
 
-	defer db.Close()
-	return usuario, nil
+	return &u, nil
 }
 
-func AtualizarUsuario(id int, nome, email, username, senha string, ativo bool) {
+func AtualizarUsuario(u *Usuario) error {
 	db := db.ConectaBD("public")
+	defer db.Close()
 
-	UsuarioAtualizado, err := db.Prepare("update usuario set nome=$1, email=$2, username=$3, senha=$4, ativo=$5 where id=$6")
+	statement, err := db.Prepare("update usuario set nome=$1, email=$2, username=$3, senha=$4, ativo=$5 where id=$6")
 	if err != nil {
-		panic(err.Error())
+		return &apperr.Erro{
+			Mensagem: "Falha ao preparar query de atualização!",
+			Causa:    err,
+		}
 	}
 
-	UsuarioAtualizado.Exec(nome, email, username, senha, ativo, id)
-	defer db.Close()
+	statement.Close()
+
+	_, err = statement.Exec(u.Nome, u.Email, u.Username, u.Senha, u.Ativo, u.Id)
+
+	if err != nil {
+		return &apperr.Erro{
+			Mensagem: fmt.Sprintf("Erro ao executar atualização do usuário"),
+			Causa:    err,
+		}
+	}
+
+	return nil //Suceso bb
 }
