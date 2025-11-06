@@ -13,12 +13,12 @@ import (
 
 // Handlers de Perfil
 
-func PerfilConfigHandler(r *http.Request) (IAM.Usuario, error) {
+func PerfilConfigHandler(r *http.Request) (*IAM.Usuario, error) {
 	Id_usuario_valor := r.Context().Value(userIdKey)
 	Id_usuario, ok := Id_usuario_valor.(int)
 
 	if !ok {
-		return IAM.Usuario{}, &apperr.Erro{
+		return &IAM.Usuario{}, &apperr.Erro{
 			Mensagem: "ID de usuário não encontrado no contexto.",
 			Status:   http.StatusUnauthorized,
 		}
@@ -26,10 +26,10 @@ func PerfilConfigHandler(r *http.Request) (IAM.Usuario, error) {
 
 	data, err := IAM.ObterUsuario(Id_usuario)
 	if err != nil {
-		return IAM.Usuario{}, err
+		return &IAM.Usuario{}, err
 	}
 
-	return *data, nil
+	return data, nil
 }
 
 func PerfilConfigAtualizarHandler(w http.ResponseWriter, r *http.Request) {
@@ -94,38 +94,46 @@ func MensagemExcluirHandler(w http.ResponseWriter, r *http.Request) {
 
 // Handlers de Organização
 
-func OrganizacaoCarregaHandler(r *http.Request) (IAM.Organizacao, error) {
+func OrganizacaoCarregaHandler(r *http.Request) (*IAM.Organizacao, error) {
 	Id_usuario_valor := r.Context().Value(userIdKey)
 	Id_usuario, ok := Id_usuario_valor.(int)
 
 	if !ok {
-		return IAM.Organizacao{}, &apperr.Erro{
+		return &IAM.Organizacao{}, &apperr.Erro{
 			Mensagem: "ID de usuário não encontrado no contexto!",
 			Status:   http.StatusUnauthorized,
 		}
 	}
 
-	userOrg := IAM.ObterUsuarioOrganizacaoPorUsuario(Id_usuario)
+	usuario_organizacao := IAM.ObterUsuarioOrganizacaoPorUsuario(Id_usuario)
 
-	org := IAM.ObterOrganizacao(strconv.Itoa(userOrg.Organizacao))
+	organizacao, err := IAM.ObterOrganizacao(strconv.Itoa(usuario_organizacao.Organizacao))
 
-	return org
+	if err != nil {
+		return &IAM.Organizacao{}, &apperr.Erro{
+			Mensagem: "Falha ao obter organização.",
+			Causa:    err,
+		}
+	}
+
+	return *organizacao, nil
 }
 
 func OrganizacaoAtualizaHandler(w http.ResponseWriter, r *http.Request) {
 
-	idOrg, _ := strconv.Atoi(r.FormValue("id"))
-	nome := r.FormValue("nome")
-	cpfcnpj := r.FormValue("documento")
+	var organizacao *IAM.Organizacao
+
+	organizacao.Id, _ = strconv.Atoi(r.FormValue("id"))
+	organizacao.Nome = r.FormValue("nome")
+	organizacao.Cpfcnpj = r.FormValue("documento")
 	endereco := r.FormValue("endereco")
 	listaEndereco := strings.Split(endereco, ",")
-	cidade := strings.TrimSpace(listaEndereco[0])
-	estado := strings.TrimSpace(listaEndereco[1])
-	pais := strings.TrimSpace(listaEndereco[2])
-	telefone := r.FormValue("telefone")
-	fmt.Println(cidade, estado, pais)
+	organizacao.Cidade = strings.TrimSpace(listaEndereco[0])
+	organizacao.Estado = strings.TrimSpace(listaEndereco[1])
+	organizacao.Pais = strings.TrimSpace(listaEndereco[2])
+	organizacao.Telefone = r.FormValue("telefone")
 
-	IAM.AtualizarOrganizacao(idOrg, nome, cpfcnpj, pais, cidade, estado, telefone)
+	IAM.AtualizarOrganizacao(organizacao)
 
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
