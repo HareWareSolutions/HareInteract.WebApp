@@ -1,10 +1,12 @@
 package IAM
 
 import (
-	"fmt"
+	"database/sql"
+	"net/http"
 	"time"
 
 	"HareInteract.WebApp/db"
+	"HareInteract.WebApp/models/apperr"
 )
 
 type Organizacao struct {
@@ -19,77 +21,115 @@ type Organizacao struct {
 	DataCadastro  time.Time `json:"dataCadastro" validate:"required"`
 }
 
-func CriarOrganizacao(nome string, responsavelId int, cpfcnpj string, pais string, cidade string, estado string, telefone string) {
+func CriarOrganizacao(nome string, responsavelId int, cpfcnpj string, pais string, cidade string, estado string, telefone string) error {
 	db := db.ConectaBD("public")
 	defer db.Close()
 
 	dataCadastro := time.Now()
 
 	cadastrarOrganizacao, err := db.Prepare("insert into organizacao(nome, responsavel, cpfcnpj, pais, cidade, estado, telefone, data_cadastro) values($1, $2, $3, $4, $5, $6, $7, $8)")
+
 	if err != nil {
-		panic(err.Error())
+		return &apperr.Erro{
+			Mensagem: "Falha ao preparar query de inserção!",
+			Causa:    err,
+		}
 	}
 
-	cadastrarOrganizacao.Exec(nome, responsavelId, cpfcnpj, pais, cidade, estado, telefone, dataCadastro)
+	cadastrarOrganizacao.Close()
+
+	_, err = cadastrarOrganizacao.Exec(nome, responsavelId, cpfcnpj, pais, cidade, estado, telefone, dataCadastro)
+
+	if err != nil {
+		return &apperr.Erro{
+			Mensagem: "Falha ao executar a inserção da organização!",
+			Causa:    err,
+		}
+	}
+
+	return nil
 }
 
-func DeletaOrganizacao(id string) {
+func DeletaOrganizacao(id string) error {
 	db := db.ConectaBD("public")
 	defer db.Close()
 
 	deletarOrganizacao, err := db.Prepare("delete from organizacao where id = $1")
+
 	if err != nil {
-		panic(err.Error())
+		return &apperr.Erro{
+			Mensagem: "Falha ao preparar query de remoção!",
+			Causa:    err,
+		}
 	}
 
-	deletarOrganizacao.Exec(id)
+	_, err = deletarOrganizacao.Exec(id)
+	if err != nil {
+		return &apperr.Erro{
+			Mensagem: "Falha ao remover organização!",
+			Causa:    err,
+		}
+	}
+
+	return nil
 }
 
-func ObterOrganizacao(id string) Organizacao {
+func ObterOrganizacao(id string) (*Organizacao, error) {
 	db := db.ConectaBD("public")
 	defer db.Close()
 
-	organizacao, err := db.Query("select * from organizacao where id = $1", id)
+	var organizacao Organizacao
+
+	row := db.QueryRow("select * from organizacao where id = $1", id)
+
+	err := row.Scan(&organizacao.Id, &organizacao.Nome, &organizacao.ResponsavelId, &organizacao.Cpfcnpj,
+		&organizacao.Pais, &organizacao.Cidade, &organizacao.Estado, &organizacao.Telefone, &organizacao.DataCadastro)
+
 	if err != nil {
-		panic(err.Error())
-	}
-	defer organizacao.Close()
 
-	organizacaoParaEditar := Organizacao{}
-
-	if organizacao.Next() {
-		var id, responsavelId int
-		var nome, cpfcnpj, pais, cidade, estado, telefone string
-		var dataCadastro time.Time
-
-		err = organizacao.Scan(&id, &nome, &responsavelId, &cpfcnpj, &pais, &cidade, &estado, &telefone, &dataCadastro)
-		if err != nil {
-			panic(err.Error())
+		if err == sql.ErrNoRows {
+			return nil, &apperr.Erro{
+				Mensagem: "Nenhum registro encontrado!",
+				Status:   http.StatusNotFound,
+			}
+		} else {
+			return nil, &apperr.Erro{
+				Mensagem: "Falha ao consultar organização no banco de dados!",
+				Causa:    err,
+				Status:   http.StatusInternalServerError,
+			}
 		}
 
-		organizacaoParaEditar.Id = id
-		organizacaoParaEditar.Nome = nome
-		organizacaoParaEditar.ResponsavelId = responsavelId
-		organizacaoParaEditar.Cpfcnpj = cpfcnpj
-		organizacaoParaEditar.Pais = pais
-		organizacaoParaEditar.Cidade = cidade
-		organizacaoParaEditar.Estado = estado
-		organizacaoParaEditar.Telefone = telefone
-		organizacaoParaEditar.DataCadastro = dataCadastro
 	}
-	return organizacaoParaEditar
+
+	return &organizacao, nil
+
 }
 
-func AtualizarOrganizacao(id int, nome string, cpfcnpj, pais, cidade, estado, telefone string) {
+func AtualizarOrganizacao(organizacao *Organizacao) error {
 	db := db.ConectaBD("public")
 	defer db.Close()
 
-	OrganizacaoAtualizada, err := db.Prepare("update organizacao set nome=$1, cpfcnpj=$2, pais=$3, cidade=$4, estado=$5, telefone=$6 where id = $7")
+	statement, err := db.Prepare("update organizacao set nome=$1, cpfcnpj=$2, pais=$3, cidade=$4, estado=$5, telefone=$6 where id = $7")
+
 	if err != nil {
-		panic(err.Error())
+		return &apperr.Erro{
+			Mensagem: "Falha ao preparar query de atualização!",
+			Causa:    err,
+		}
 	}
 
-	fmt.Println("Dados recebidos: (AtualizarOrganizacao)", nome, cpfcnpj, pais, cidade, estado, telefone, id)
+	statement.Close()
 
-	OrganizacaoAtualizada.Exec(nome, cpfcnpj, pais, cidade, estado, telefone, id)
+	_, err = statement.Exec(organizacao.Nome, organizacao.Cpfcnpj, organizacao.Pais, organizacao.Cidade,
+		organizacao.Estado, organizacao.Telefone, organizacao.Id)
+
+	if err != nil {
+		return &apperr.Erro{
+			Mensagem: "Falha ao executar atualização da organização.",
+			Causa:    err,
+		}
+	}
+
+	return nil
 }

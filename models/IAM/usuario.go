@@ -2,7 +2,6 @@ package IAM
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -22,6 +21,7 @@ type Usuario struct {
 func CriarUsuario(nome, email, username, senha string) error {
 	db := db.ConectaBD("public")
 	defer db.Close()
+
 	cadastrarUsuario, err := db.Prepare("insert into usuario(nome, email, username, senha, ativo) values($1, $2, $3, $4, $5)")
 	if err != nil {
 		return &apperr.Erro{
@@ -87,16 +87,16 @@ func ObterUsuarios() ([]Usuario, error) {
 
 	for rows.Next() {
 
-		var u Usuario
+		var usuario Usuario
 
-		err := rows.Scan(&u.Id, &u.Nome, &u.Email, &u.Username, &u.Senha, &u.Ativo)
+		err := rows.Scan(&usuario.Id, &usuario.Nome, &usuario.Email, &usuario.Username, &usuario.Senha, &usuario.Ativo)
 
 		if err != nil {
 			log.Printf("Erro ao scananear linha: ", err)
 			continue
 		}
 
-		usuarios = append(usuarios, u)
+		usuarios = append(usuarios, usuario)
 
 	}
 
@@ -115,11 +115,11 @@ func ObterUsuario(id int) (*Usuario, error) {
 	db := db.ConectaBD("public")
 	defer db.Close()
 
-	var u Usuario
+	var usuario Usuario
 
 	row := db.QueryRow("select id, nome, email, username, senha, ativo from usuario where id=$1", id)
 
-	err := row.Scan(&u.Id, &u.Nome, &u.Email, &u.Username, &u.Senha, &u.Ativo)
+	err := row.Scan(&usuario.Id, &usuario.Nome, &usuario.Email, &usuario.Username, &usuario.Senha, &usuario.Ativo)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -136,18 +136,18 @@ func ObterUsuario(id int) (*Usuario, error) {
 		}
 	}
 
-	return &u, nil
+	return &usuario, nil
 }
 
 func ObterUsuarioPorUsername(username string) (*Usuario, error) {
 	db := db.ConectaBD("public")
 	defer db.Close()
 
-	var u Usuario
+	var usuario Usuario
 
 	row := db.QueryRow("SELECT id, username, senha, ativo FROM usuario WHERE username = $1", username)
 
-	err := row.Scan(&u.Id, &u.Username, &u.Senha, &u.Ativo)
+	err := row.Scan(&usuario.Id, &usuario.Username, &usuario.Senha, &usuario.Ativo)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, &apperr.Erro{
@@ -162,7 +162,7 @@ func ObterUsuarioPorUsername(username string) (*Usuario, error) {
 
 	}
 
-	return &u, nil
+	return &usuario, nil
 }
 
 func LoginUsuario(username string) (*Usuario, error) {
@@ -171,9 +171,9 @@ func LoginUsuario(username string) (*Usuario, error) {
 
 	row := db.QueryRow("SELECT id, username, senha, ativo FROM usuario WHERE username = $1", username)
 
-	var u Usuario
+	var usuario Usuario
 
-	err := row.Scan(&u.Id, &u.Username, &u.Senha, &u.Ativo)
+	err := row.Scan(&usuario.Id, &usuario.Username, &usuario.Senha, &usuario.Ativo)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, &apperr.Erro{
@@ -188,10 +188,10 @@ func LoginUsuario(username string) (*Usuario, error) {
 
 	}
 
-	return &u, nil
+	return &usuario, nil
 }
 
-func AtualizarUsuario(u *Usuario) error {
+func AtualizarUsuario(usuario *Usuario) error {
 	db := db.ConectaBD("public")
 	defer db.Close()
 
@@ -205,11 +205,11 @@ func AtualizarUsuario(u *Usuario) error {
 
 	statement.Close()
 
-	_, err = statement.Exec(u.Nome, u.Email, u.Username, u.Senha, u.Ativo, u.Id)
+	_, err = statement.Exec(usuario.Nome, usuario.Email, usuario.Username, usuario.Senha, usuario.Ativo, usuario.Id)
 
 	if err != nil {
 		return &apperr.Erro{
-			Mensagem: fmt.Sprintf("Erro ao executar atualização do usuário"),
+			Mensagem: "Falha ao executar atualização do usuário.",
 			Causa:    err,
 		}
 	}

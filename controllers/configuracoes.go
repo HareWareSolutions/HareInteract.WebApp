@@ -94,10 +94,18 @@ func MensagemExcluirHandler(w http.ResponseWriter, r *http.Request) {
 
 // Handlers de Organização
 
-func OrganizacaoCarregaHandler(r *http.Request) IAM.Organizacao {
-	userId := r.Context().Value(userIdKey).(int)
+func OrganizacaoCarregaHandler(r *http.Request) (IAM.Organizacao, error) {
+	Id_usuario_valor := r.Context().Value(userIdKey)
+	Id_usuario, ok := Id_usuario_valor.(int)
 
-	userOrg := IAM.ObterUsuarioOrganizacaoPorUsuario(userId)
+	if !ok {
+		return IAM.Organizacao{}, &apperr.Erro{
+			Mensagem: "ID de usuário não encontrado no contexto!",
+			Status:   http.StatusUnauthorized,
+		}
+	}
+
+	userOrg := IAM.ObterUsuarioOrganizacaoPorUsuario(Id_usuario)
 
 	org := IAM.ObterOrganizacao(strconv.Itoa(userOrg.Organizacao))
 
