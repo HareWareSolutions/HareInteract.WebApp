@@ -6,6 +6,7 @@ import "fmt"
 type Erro struct {
 	Mensagem string //Mensagem informando em que ação ocorreu o erro
 	Causa    error  //Erro original retornado
+	Status   int
 }
 
 func (e *Erro) Error() string {

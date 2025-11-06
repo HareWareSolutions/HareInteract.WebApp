@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,44 +8,62 @@ import (
 	"strings"
 
 	"HareInteract.WebApp/models/IAM"
+	"HareInteract.WebApp/models/apperr"
 )
 
 // Handlers de Perfil
 
 func PerfilConfigHandler(r *http.Request) (IAM.Usuario, error) {
-	userID, ok := r.Context().Value(userIdKey).(int)
+	Id_usuario_valor := r.Context().Value(userIdKey)
+	Id_usuario, ok := Id_usuario_valor.(int)
 
 	if !ok {
-		return IAM.Usuario{}, errors.New("Informações de sessão não encontradas.")
+		return IAM.Usuario{}, &apperr.Erro{
+			Mensagem: "ID de usuário não encontrado no contexto.",
+			Status:   http.StatusUnauthorized,
+		}
 	}
-	data := IAM.ObterUsuario(userID)
 
-	return data, nil
+	data, err := IAM.ObterUsuario(Id_usuario)
+	if err != nil {
+		return IAM.Usuario{}, err
+	}
+
+	return *data, nil
 }
 
 func PerfilConfigAtualizarHandler(w http.ResponseWriter, r *http.Request) {
 
-	user := IAM.Usuario{}
+	usuario := IAM.Usuario{}
 
-	user.Id = r.Context().Value(userIdKey).(int)
-	user.Nome = r.FormValue("nome")
-	user.Email = r.FormValue("email")
-	user.Username = r.FormValue("username")
-	user.Senha = r.FormValue("senha")
+	usuario.Id = r.Context().Value(userIdKey).(int)
+	usuario.Nome = r.FormValue("nome")
+	usuario.Email = r.FormValue("email")
+	usuario.Username = r.FormValue("username")
+	usuario.Senha = r.FormValue("senha")
+	usuario.Ativo = true
 
-	IAM.AtualizarUsuario(user.Id, user.Nome, user.Email, user.Username, user.Senha, true)
+	IAM.AtualizarUsuario(&usuario)
 
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
 
 func PerfilConfigExcluirHandler(w http.ResponseWriter, r *http.Request) {
-	userId := r.Context().Value(userIdKey).(int)
+	Id_usuario := r.Context().Value(userIdKey).(int)
 
-	user := IAM.ObterUsuario(userId)
+	usuario, err := IAM.ObterUsuario(Id_usuario)
 
-	user.Ativo = false
+	if err != nil {
+		err = &apperr.Erro{
+			Mensagem: "Falha ao obter usuário",
+			Causa:    err,
+		}
 
-	IAM.AtualizarUsuario(user.Id, user.Nome, user.Email, user.Username, user.Senha, user.Ativo)
+	}
+
+	usuario.Ativo = false
+
+	IAM.AtualizarUsuario(usuario)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

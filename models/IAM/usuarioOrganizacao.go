@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"HareInteract.WebApp/db"
-	//"HareInteract.WebApp/models/IAM"
+	"HareInteract.WebApp/models/apperr"
 )
 
 type UsuarioOrganizacao struct {
@@ -86,7 +86,7 @@ func ObterUsuariosOrgPublicoPorIdOrg(id int) []UsuarioOrganizacaoPublico {
 	usuariosOrgPub := []UsuarioOrganizacaoPublico{}
 
 	for _, usuario := range usuariosOrg {
-		usuarioOrgPub := ConverterUsuarioOrgPublico(usuario)
+		usuarioOrgPub, _ := ConverterUsuarioOrgPublico(usuario)
 		usuariosOrgPub = append(usuariosOrgPub, usuarioOrgPub)
 	}
 
@@ -95,7 +95,7 @@ func ObterUsuariosOrgPublicoPorIdOrg(id int) []UsuarioOrganizacaoPublico {
 
 func ObterUsuarioOrgPublicoPorUsuario(id int) UsuarioOrganizacaoPublico {
 	UsuarioOrg := ObterUsuarioOrganizacaoPorUsuario(id)
-	UsuarioOrgPub := ConverterUsuarioOrgPublico(UsuarioOrg)
+	UsuarioOrgPub, _ := ConverterUsuarioOrgPublico(UsuarioOrg)
 
 	return UsuarioOrgPub
 }
@@ -163,9 +163,16 @@ func AtualizarUsuarioOrganizacao(id, usuario, organizacao int, nivelAcesso strin
 	defer db.Close()
 }
 
-func ConverterUsuarioOrgPublico(u UsuarioOrganizacao) UsuarioOrganizacaoPublico {
+func ConverterUsuarioOrgPublico(u UsuarioOrganizacao) (UsuarioOrganizacaoPublico, error) {
 
-	usuario := ObterUsuario(u.Usuario)
+	usuario, err := ObterUsuario(u.Usuario)
+
+	if err != nil {
+		return UsuarioOrganizacaoPublico{}, &apperr.Erro{
+			Mensagem: "Erro ao converter usuário da organização!",
+			Causa:    err,
+		}
+	}
 
 	usuarioOrgPub := UsuarioOrganizacaoPublico{}
 
@@ -177,7 +184,7 @@ func ConverterUsuarioOrgPublico(u UsuarioOrganizacao) UsuarioOrganizacaoPublico 
 	usuarioOrgPub.Nome = usuario.Nome
 	usuarioOrgPub.Email = usuario.Email
 
-	return usuarioOrgPub
+	return usuarioOrgPub, nil
 }
 
 func ValidarNivelAcesso(nivelUsuario string, nivelRequerido string) bool {

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Erro {{.Status}}</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        .error-box { border: 1px solid #ff4444; padding: 20px; max-width: 500px; margin: 0 auto; background-color: #ffebeb; }
+        h1 { color: #cc0000; }
+    </style>
+</head>
+<body>
+    <div class="error-box">
+        <h1>Ops! Aconteceu um Erro</h1>
+        <h2>Detalhe: {{.Mensagem}}</h2>
+        <p><strong>Causa:</strong> {{.Causa}}</p>
+        <hr>
+        <p>Por favor, entre em contato com o suporte.</p>
+    </div>
+</body>
+</html>

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 
 	"HareInteract.WebApp/db"
 	"HareInteract.WebApp/models/apperr"
@@ -124,11 +125,13 @@ func ObterUsuario(id int) (*Usuario, error) {
 		if err == sql.ErrNoRows {
 			return nil, &apperr.Erro{
 				Mensagem: "Nenhum registro encontrado!",
+				Status:   http.StatusNotFound,
 			}
 		} else {
 			return nil, &apperr.Erro{
 				Mensagem: "Falha ao consultar usuário no banco de dados!",
 				Causa:    err,
+				Status:   http.StatusInternalServerError,
 			}
 		}
 	}

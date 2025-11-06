@@ -3,6 +3,8 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+
+	"HareInteract.WebApp/models/apperr"
 )
 
 func DashboardHandler(w http.ResponseWriter, r *http.Request) {
@@ -112,7 +114,17 @@ func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := PerfilConfigHandler(r)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
+		statusCode := http.StatusInternalServerError
+
+		if appErr, isCustom := err.(*apperr.Erro); isCustom {
+			if appErr.Status != 0 {
+				statusCode = appErr.Status
+			}
+		}
+
+		w.WriteHeader(statusCode)
+
+		templates.ExecuteTemplate(w, "erro.html", err)
 		return
 	}
 
