@@ -198,12 +198,10 @@ func AtualizarUsuario(usuario *Usuario) error {
 	statement, err := db.Prepare("update usuario set nome=$1, email=$2, username=$3, senha=$4, ativo=$5 where id=$6")
 	if err != nil {
 		return &apperr.Erro{
-			Mensagem: "Falha ao preparar query de atualização!",
+			Mensagem: "Falha ao preparar query de atualização.",
 			Causa:    err,
 		}
 	}
-
-	statement.Close()
 
 	_, err = statement.Exec(usuario.Nome, usuario.Email, usuario.Username, usuario.Senha, usuario.Ativo, usuario.Id)
 

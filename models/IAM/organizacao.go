@@ -2,6 +2,7 @@ package IAM
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -36,7 +37,7 @@ func CriarOrganizacao(nome string, responsavelId int, cpfcnpj string, pais strin
 		}
 	}
 
-	cadastrarOrganizacao.Close()
+	defer cadastrarOrganizacao.Close()
 
 	_, err = cadastrarOrganizacao.Exec(nome, responsavelId, cpfcnpj, pais, cidade, estado, telefone, dataCadastro)
 
@@ -58,10 +59,12 @@ func DeletaOrganizacao(id string) error {
 
 	if err != nil {
 		return &apperr.Erro{
-			Mensagem: "Falha ao preparar query de remoção!",
+			Mensagem: "Falha ao preparar query de remoção",
 			Causa:    err,
 		}
 	}
+
+	defer deletarOrganizacao.Close()
 
 	_, err = deletarOrganizacao.Exec(id)
 	if err != nil {
@@ -80,7 +83,7 @@ func ObterOrganizacao(id string) (*Organizacao, error) {
 
 	var organizacao Organizacao
 
-	row := db.QueryRow("select * from organizacao where id = $1", id)
+	row := db.QueryRow("select id, nome, responsavel, cpfcnpj, pais, cidade, estado, telefone, data_cadastro from organizacao where id = $1", id)
 
 	err := row.Scan(&organizacao.Id, &organizacao.Nome, &organizacao.ResponsavelId, &organizacao.Cpfcnpj,
 		&organizacao.Pais, &organizacao.Cidade, &organizacao.Estado, &organizacao.Telefone, &organizacao.DataCadastro)
@@ -101,7 +104,7 @@ func ObterOrganizacao(id string) (*Organizacao, error) {
 		}
 
 	}
-
+	fmt.Println("ObterOrganizacao resultou em: ", organizacao)
 	return &organizacao, nil
 
 }
@@ -119,7 +122,7 @@ func AtualizarOrganizacao(organizacao *Organizacao) error {
 		}
 	}
 
-	statement.Close()
+	defer statement.Close()
 
 	_, err = statement.Exec(organizacao.Nome, organizacao.Cpfcnpj, organizacao.Pais, organizacao.Cidade,
 		organizacao.Estado, organizacao.Telefone, organizacao.Id)
@@ -130,6 +133,6 @@ func AtualizarOrganizacao(organizacao *Organizacao) error {
 			Causa:    err,
 		}
 	}
-
+	fmt.Println("Organização.go AtualizarOrganizacao recebeu: ", organizacao)
 	return nil
 }

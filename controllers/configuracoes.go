@@ -71,9 +71,9 @@ func PerfilConfigExcluirHandler(w http.ResponseWriter, r *http.Request) {
 //Handlers de Mensagem
 
 func MensagemCarregaHandler(r *http.Request) []IAM.Mensagem {
-	userId := r.Context().Value(userIdKey).(int)
+	ID_usuario := r.Context().Value(userIdKey).(int)
 
-	data := IAM.ObterMensagens(userId)
+	data := IAM.ObterMensagens(ID_usuario)
 
 	return data
 }
@@ -105,25 +105,38 @@ func OrganizacaoCarregaHandler(r *http.Request) (*IAM.Organizacao, error) {
 		}
 	}
 
-	usuario_organizacao := IAM.ObterUsuarioOrganizacaoPorUsuario(Id_usuario)
+	usuario_organizacao, err := IAM.ObterUsuarioOrganizacaoPorUsuario(Id_usuario)
+	if err != nil {
+		return nil, &apperr.Erro{
+			Mensagem: "Falha ao obter usuário organização pelo ID de usuário.",
+			Causa:    err,
+		}
+	}
 
 	organizacao, err := IAM.ObterOrganizacao(strconv.Itoa(usuario_organizacao.Organizacao))
 
 	if err != nil {
-		return &IAM.Organizacao{}, &apperr.Erro{
+		return nil, &apperr.Erro{
 			Mensagem: "Falha ao obter organização.",
 			Causa:    err,
 		}
 	}
 
+	fmt.Println("OrganizacaoCarregaHandler está carregando: ", organizacao)
 	return organizacao, nil
 }
 
 func OrganizacaoAtualizaHandler(w http.ResponseWriter, r *http.Request) {
 
-	var organizacao *IAM.Organizacao
+	organizacao := &IAM.Organizacao{} //Cria uma estrutura Organizacao e captura seu endereço
 
 	organizacao.Id, _ = strconv.Atoi(r.FormValue("id"))
+
+	fmt.Println("Verificando os ID da organização: ")
+	fmt.Println(r.FormValue("id"))
+	fmt.Println(strconv.Atoi(r.FormValue("id")))
+	fmt.Println(organizacao.Id)
+
 	organizacao.Nome = r.FormValue("nome")
 	organizacao.Cpfcnpj = r.FormValue("documento")
 	endereco := r.FormValue("endereco")
@@ -133,34 +146,89 @@ func OrganizacaoAtualizaHandler(w http.ResponseWriter, r *http.Request) {
 	organizacao.Pais = strings.TrimSpace(listaEndereco[2])
 	organizacao.Telefone = r.FormValue("telefone")
 
-	IAM.AtualizarOrganizacao(organizacao)
+	err := IAM.AtualizarOrganizacao(organizacao)
+	if err != nil {
+		statusCode := http.StatusInternalServerError
 
+		if appErr, isCustom := err.(*apperr.Erro); isCustom {
+			if appErr.Status != 0 {
+				statusCode = appErr.Status
+			}
+		}
+
+		w.WriteHeader(statusCode)
+
+		templates.ExecuteTemplate(w, "erro.html", err)
+		return
+	}
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
 
 // Handlers de Usuarios
 
-func UsuariosCarregaHandler(r *http.Request) []IAM.UsuarioOrganizacaoPublico {
-	userId := r.Context().Value(userIdKey).(int)
-	userOrg := IAM.ObterUsuarioOrganizacaoPorUsuario(userId)
+func UsuariosCarregaHandler(r *http.Request) ([]IAM.UsuarioOrganizacaoPublico, error) {
+	ID_usuario := r.Context().Value(userIdKey).(int)
+	usuarioOrganizacao, err := IAM.ObterUsuarioOrganizacaoPorUsuario(ID_usuario)
 
-	idOrg := userOrg.Organizacao
+	if err != nil {
+		return nil, &apperr.Erro{
+			Mensagem: "Falha ao obter usuário organização por ID do usuário.",
+			Causa:    err,
+		}
+	}
 
-	data := IAM.ObterUsuariosOrgPublicoPorIdOrg(idOrg)
+	ID_Organizacao := usuarioOrganizacao.Organizacao
 
-	return data
+	usuariosOrganizacaoPublico, err := IAM.ObterUsuariosOrgPublicoPorIdOrg(ID_Organizacao)
+
+	if err != nil {
+		return nil, &apperr.Erro{
+			Mensagem: "Falha ao obter usuário organização por ID da organização.",
+			Causa:    err,
+		}
+	}
+
+	return usuariosOrganizacaoPublico, nil
 }
 
 func UsuarioAtualizaHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := r.FormValue("id")
-	userId, _ := strconv.Atoi(id)
+	ID_usuario, _ := strconv.Atoi(id)
 
-	userOrg := IAM.ObterUsuarioOrganizacao(userId)
+	UsuarioOrganizacao, err := IAM.ObterUsuarioOrganizacao(ID_usuario)
+	if err != nil {
+		statusCode := http.StatusInternalServerError
 
-	userOrg.NivelAcesso = r.FormValue("nivelAcesso")
+		if appErr, isCustom := err.(*apperr.Erro); isCustom {
+			if appErr.Status != 0 {
+				statusCode = appErr.Status
+			}
+		}
 
-	IAM.AtualizarUsuarioOrganizacao(userOrg.Id, userOrg.Usuario, userOrg.Organizacao, userOrg.NivelAcesso)
+		w.WriteHeader(statusCode)
+
+		templates.ExecuteTemplate(w, "erro.html", err)
+		return
+	}
+
+	UsuarioOrganizacao.NivelAcesso = r.FormValue("nivelAcesso")
+
+	err = IAM.AtualizarUsuarioOrganizacao(UsuarioOrganizacao)
+	if err != nil {
+		statusCode := http.StatusInternalServerError
+
+		if appErr, isCustom := err.(*apperr.Erro); isCustom {
+			if appErr.Status != 0 {
+				statusCode = appErr.Status
+			}
+		}
+
+		w.WriteHeader(statusCode)
+
+		templates.ExecuteTemplate(w, "erro.html", err)
+		return
+	}
 
 	http.Redirect(w, r, "/configuracoes", http.StatusSeeOther)
 }
@@ -177,11 +245,36 @@ func UsuarioExcluirHandler(w http.ResponseWriter, r *http.Request) {
 func UsuarioSairOrganizacao(w http.ResponseWriter, r *http.Request) {
 	id := r.Context().Value(userIdKey).(int)
 
-	usuario := IAM.ObterUsuarioOrganizacaoPorUsuario(id)
+	usuario, err := IAM.ObterUsuarioOrganizacaoPorUsuario(id)
+	if err != nil {
+		statusCode := http.StatusInternalServerError
 
-	if IAM.ValidarNivelAcesso(usuario.NivelAcesso, "Proprietario") {
-		log.Printf("Proprietário não deve sair da organização.")
-		http.Error(w, "Proprietário não pode sair da organização. A organização deve ter outro proprietário designado primeiro ou ser excluída.", http.StatusForbidden)
+		if appErr, isCustom := err.(*apperr.Erro); isCustom {
+			if appErr.Status != 0 {
+				statusCode = appErr.Status
+			}
+		}
+
+		w.WriteHeader(statusCode)
+
+		templates.ExecuteTemplate(w, "erro.html", err)
+		return
+	}
+
+	err = IAM.ValidarNivelAcesso(usuario.NivelAcesso, "Proprietario")
+	if err != nil {
+		statusCode := http.StatusInternalServerError
+
+		if appErr, isCustom := err.(*apperr.Erro); isCustom {
+			if appErr.Status != 0 {
+				statusCode = appErr.Status
+			}
+			appErr.Mensagem = "Proprietário não pode sair da organização. A organização deve ter outro proprietário designado primeiro ou ser excluída."
+		}
+
+		w.WriteHeader(statusCode)
+
+		templates.ExecuteTemplate(w, "erro.html", err)
 		return
 	}
 
@@ -193,21 +286,32 @@ func UsuarioConvidarOrganizacao(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("searchInput")
 	id := r.Context().Value(userIdKey).(int)
 
-	usuarioOrigem := IAM.ObterUsuarioOrgPublicoPorUsuario(id)
+	usuarioOrigem, _ := IAM.ObterUsuarioOrgPublicoPorUsuario(id)
 
 	usuarioDestino, err := IAM.ObterUsuarioPorUsername(username)
 
 	nivelAcessoConvidado := r.FormValue("nivelAcesso")
 
 	if err != nil {
-		log.Printf("Erro ao buscar usuário: ", err)
-		http.Error(w, "Erro ao buscar usuário. Verifique se o Username está correto.", http.StatusForbidden)
+		statusCode := http.StatusInternalServerError
+
+		if appErr, isCustom := err.(*apperr.Erro); isCustom {
+			if appErr.Status != 0 {
+				statusCode = appErr.Status
+			}
+
+			appErr.Mensagem = "Falha ao buscar usuário para convidar. Verifique se o username informado está correto."
+		}
+
+		w.WriteHeader(statusCode)
+
+		templates.ExecuteTemplate(w, "erro.html", err)
 		return
 	}
 
 	//Validar se o usuário a convidar está participando de uma organização
 	fmt.Println(usuarioDestino.Id)
-	usuarioDestinoOrg := IAM.ObterUsuarioOrganizacaoPorUsuario(usuarioDestino.Id) //validação errada
+	usuarioDestinoOrg, err := IAM.ObterUsuarioOrganizacaoPorUsuario(usuarioDestino.Id) //validação errada
 
 	if usuarioDestinoOrg.Usuario == usuarioDestino.Id {
 		http.Error(w, "Usuário convidado já pertence a uma organização! ", http.StatusForbidden)

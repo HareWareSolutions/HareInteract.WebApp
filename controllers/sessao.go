@@ -22,14 +22,28 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if usuario_correto.Ativo == false {
+		if !usuario_correto.Ativo {
 			log.Println("O seu usuário não está mais ativo no sistema.")
 			http.Error(w, "Sua conta não está ativa.", http.StatusUnauthorized)
 			return
 		}
 
 		if usuario == usuario_correto.Username && senha == usuario_correto.Senha {
-			usuarioOrganizacao := IAM.ObterUsuarioOrganizacaoPorUsuario(usuario_correto.Id)
+			usuarioOrganizacao, err := IAM.ObterUsuarioOrganizacaoPorUsuario(usuario_correto.Id)
+			if err != nil {
+				statusCode := http.StatusInternalServerError
+
+				if appErr, isCustom := err.(*apperr.Erro); isCustom {
+					if appErr.Status != 0 {
+						statusCode = appErr.Status
+					}
+				}
+
+				w.WriteHeader(statusCode)
+
+				templates.ExecuteTemplate(w, "erro.html", err)
+				return
+			}
 
 			usuarioOrganizacao_IdOrganizacao := strconv.Itoa(usuarioOrganizacao.Organizacao)
 

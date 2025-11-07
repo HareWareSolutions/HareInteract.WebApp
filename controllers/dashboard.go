@@ -147,7 +147,22 @@ func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usuarios := UsuariosCarregaHandler(r)
+	usuarios, err := UsuariosCarregaHandler(r)
+
+	if err != nil {
+		statusCode := http.StatusInternalServerError
+
+		if appErr, isCustom := err.(*apperr.Erro); isCustom {
+			if appErr.Status != 0 {
+				statusCode = appErr.Status
+			}
+		}
+
+		w.WriteHeader(statusCode)
+
+		templates.ExecuteTemplate(w, "erro.html", err)
+		return
+	}
 
 	data := map[string]interface{}{
 		"searchPath":      searchPath,

@@ -2,7 +2,6 @@ package IAM
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"time"
 
@@ -24,174 +23,258 @@ type UsuarioOrganizacaoPublico struct {
 	Email string
 }
 
-func CriarUsuarioOrganizacao(usuario, organizacao int, nivelAcesso string) {
+func CriarUsuarioOrganizacao(ID_Usuario, organizacao int, nivelAcesso string) error {
 	db := db.ConectaBD("public")
+	defer db.Close()
 
 	dataCadastro := time.Now()
 
-	inserirUsuarioOrganizacao, err := db.Prepare("insert into usuario_organizacao(usuario, organizacao, nivel_acesso, dataCadastro) values($1, $2, $3, $4)")
+	cadastrarUsuarioOrganizacao, err := db.Prepare("insert into usuario_organizacao(usuario, organizacao, nivel_acesso, dataCadastro) values($1, $2, $3, $4)")
 	if err != nil {
-		panic(err.Error())
+		return &apperr.Erro{
+			Mensagem: "Falha ao preparar query de inserção!",
+			Causa:    err,
+		}
 	}
 
-	inserirUsuarioOrganizacao.Exec(usuario, organizacao, nivelAcesso, dataCadastro)
-	defer db.Close()
+	cadastrarUsuarioOrganizacao.Close()
+
+	_, err = cadastrarUsuarioOrganizacao.Exec(ID_Usuario, organizacao, nivelAcesso, dataCadastro)
+
+	if err != nil {
+		return &apperr.Erro{
+			Mensagem: "Falha ao executar a inserção da organização.",
+			Causa:    err,
+		}
+	}
+
+	return nil
 }
 
-func DeletaUsuarioOrganizacao(usuario int) {
+func DeletaUsuarioOrganizacao(ID_Usuario int) error {
 	db := db.ConectaBD("public")
+	defer db.Close()
 
 	deletarUsuarioOrganizacao, err := db.Prepare("delete from usuario_organizacao where usuario = $1")
 	if err != nil {
-		panic(err.Error())
+		return &apperr.Erro{
+			Mensagem: "Falha ao preparar query de remoção.",
+			Causa:    err,
+		}
 	}
 
-	deletarUsuarioOrganizacao.Exec(usuario)
-	defer db.Close()
+	deletarUsuarioOrganizacao.Close()
+
+	_, err = deletarUsuarioOrganizacao.Exec(ID_Usuario)
+	if err != nil {
+		return &apperr.Erro{
+			Mensagem: "Falha ao remover usuário organização.",
+			Causa:    err,
+		}
+	}
+
+	return nil
 }
 
-func ObterUsuariosOrganizacaoPorIdOrg(id int) []UsuarioOrganizacao {
+func ObterUsuariosOrganizacaoPorID_Organizacao(ID_Organizacao int) ([]UsuarioOrganizacao, error) {
 	db := db.ConectaBD("public")
+	defer db.Close()
 
-	rows, err := db.Query("SELECT * FROM usuario_organizacao WHERE organizacao = $1 ORDER BY id", id)
+	statement := "SELECT * FROM usuario_organizacao WHERE organizacao = $1 ORDER BY id"
+
+	rows, err := db.Query(statement, ID_Organizacao)
 	if err != nil {
-		panic(err.Error())
+		return nil, &apperr.Erro{
+			Mensagem: "Falha ao executar query de busca de usuários da organização.",
+			Causa:    err,
+		}
 	}
+
 	defer rows.Close()
 
-	usuarios := []UsuarioOrganizacao{}
+	usuariosOrganizacao := []UsuarioOrganizacao{}
 
 	for rows.Next() {
-		var u UsuarioOrganizacao
+		var usuarioOrganizacao UsuarioOrganizacao
 
-		err := rows.Scan(&u.Id, &u.Usuario, &u.Organizacao, &u.NivelAcesso, &u.DataCadastro)
+		err := rows.Scan(&usuarioOrganizacao.Id, &usuarioOrganizacao.Usuario, &usuarioOrganizacao.Organizacao, &usuarioOrganizacao.NivelAcesso, &usuarioOrganizacao.DataCadastro)
 
 		if err != nil {
 			log.Printf("Erro escanear linha: ", err)
 			continue
 		}
-		usuarios = append(usuarios, u)
 
-		if err = rows.Err(); err != nil {
-			log.Fatal("Erro iteração das linhas: %v", err)
-		}
+		usuariosOrganizacao = append(usuariosOrganizacao, usuarioOrganizacao)
 	}
 
-	return usuarios
-}
-
-func ObterUsuariosOrgPublicoPorIdOrg(id int) []UsuarioOrganizacaoPublico {
-
-	usuariosOrg := ObterUsuariosOrganizacaoPorIdOrg(id)
-	usuariosOrgPub := []UsuarioOrganizacaoPublico{}
-
-	for _, usuario := range usuariosOrg {
-		usuarioOrgPub, _ := ConverterUsuarioOrgPublico(usuario)
-		usuariosOrgPub = append(usuariosOrgPub, usuarioOrgPub)
-	}
-
-	return usuariosOrgPub
-}
-
-func ObterUsuarioOrgPublicoPorUsuario(id int) UsuarioOrganizacaoPublico {
-	UsuarioOrg := ObterUsuarioOrganizacaoPorUsuario(id)
-	UsuarioOrgPub, _ := ConverterUsuarioOrgPublico(UsuarioOrg)
-
-	return UsuarioOrgPub
-}
-
-func ObterUsuarioOrganizacao(id int) UsuarioOrganizacao {
-	db := db.ConectaBD("public")
-
-	usuarioOrganizacaoParaEditar := UsuarioOrganizacao{}
-
-	row := db.QueryRow("select id, usuario, organizacao, nivel_acesso from usuario_organizacao where id = $1", id)
-
-	var id_db, usuario_db, organizacao_db int
-	var nivelAcesso_db string
-
-	err := row.Scan(&id_db, &usuario_db, &organizacao_db, &nivelAcesso_db)
-	if err == sql.ErrNoRows {
-		fmt.Println(row)
-	}
-
-	usuarioOrganizacaoParaEditar.Id = id_db
-	usuarioOrganizacaoParaEditar.Usuario = usuario_db
-	usuarioOrganizacaoParaEditar.Organizacao = organizacao_db
-	usuarioOrganizacaoParaEditar.NivelAcesso = nivelAcesso_db
-
-	defer db.Close()
-	return usuarioOrganizacaoParaEditar
-}
-
-func ObterUsuarioOrganizacaoPorUsuario(usuarioId int) UsuarioOrganizacao {
-	db := db.ConectaBD("public")
-
-	usuarioOrganizacaoRecuperado := UsuarioOrganizacao{}
-
-	row := db.QueryRow("select id, usuario, organizacao, nivel_acesso from usuario_organizacao where usuario = $1", usuarioId)
-
-	err := row.Scan(
-		&usuarioOrganizacaoRecuperado.Id,
-		&usuarioOrganizacaoRecuperado.Usuario,
-		&usuarioOrganizacaoRecuperado.Organizacao,
-		&usuarioOrganizacaoRecuperado.NivelAcesso,
-	)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return UsuarioOrganizacao{}
-		}
-
-		log.Printf("Erro na chamada de função (ObterUsuarioOrganizacaoPorUsuario) para usuarioId %d: %v", usuarioId, err)
-
-	}
-
-	defer db.Close()
-	return usuarioOrganizacaoRecuperado
-}
-
-func AtualizarUsuarioOrganizacao(id, usuario, organizacao int, nivelAcesso string) {
-	db := db.ConectaBD("public")
-
-	UsuarioOrganizacaoAtualizada, err := db.Prepare("update usuario_organizacao set usuario=$1, organizacao=$2, nivel_acesso=$3 where id = $4")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	UsuarioOrganizacaoAtualizada.Exec(usuario, organizacao, nivelAcesso, id)
-	defer db.Close()
-}
-
-func ConverterUsuarioOrgPublico(u UsuarioOrganizacao) (UsuarioOrganizacaoPublico, error) {
-
-	usuario, err := ObterUsuario(u.Usuario)
-
-	if err != nil {
-		return UsuarioOrganizacaoPublico{}, &apperr.Erro{
-			Mensagem: "Erro ao converter usuário da organização!",
+	if err = rows.Err(); err != nil {
+		return nil, &apperr.Erro{
+			Mensagem: "Erro na leitura dos resultados da busca por usuários.",
 			Causa:    err,
 		}
 	}
 
-	usuarioOrgPub := UsuarioOrganizacaoPublico{}
-
-	usuarioOrgPub.Id = u.Id
-	usuarioOrgPub.Usuario = u.Usuario
-	usuarioOrgPub.Organizacao = u.Organizacao
-	usuarioOrgPub.NivelAcesso = u.NivelAcesso
-	usuarioOrgPub.DataCadastro = u.DataCadastro
-	usuarioOrgPub.Nome = usuario.Nome
-	usuarioOrgPub.Email = usuario.Email
-
-	return usuarioOrgPub, nil
+	return usuariosOrganizacao, nil
 }
 
-func ValidarNivelAcesso(nivelUsuario string, nivelRequerido string) bool {
+func ObterUsuariosOrgPublicoPorIdOrg(id int) ([]UsuarioOrganizacaoPublico, error) {
+
+	Usuarios_Organizacao, err := ObterUsuariosOrganizacaoPorID_Organizacao(id)
+	if err != nil {
+		return nil, &apperr.Erro{
+			Mensagem: "Falha ao obter usuários organização público.",
+			Causa:    err,
+		}
+	}
+
+	usuariosOrganizacaoPublico := []UsuarioOrganizacaoPublico{}
+
+	for _, usuario := range Usuarios_Organizacao {
+		UsuarioOrganizacaoPublico, _ := ConverterUsuarioOrgPublico(&usuario)
+		usuariosOrganizacaoPublico = append(usuariosOrganizacaoPublico, *UsuarioOrganizacaoPublico)
+	}
+
+	return usuariosOrganizacaoPublico, nil
+}
+
+func ObterUsuarioOrgPublicoPorUsuario(ID_usuario int) (*UsuarioOrganizacaoPublico, error) {
+	UsuarioOrganizacao, err := ObterUsuarioOrganizacaoPorUsuario(ID_usuario)
+	if err != nil {
+		return nil, &apperr.Erro{
+			Mensagem: "Falha ao obter usuário organização público.",
+			Causa:    err,
+		}
+	}
+
+	UsuarioOrganizacaoPublico, err := ConverterUsuarioOrgPublico(UsuarioOrganizacao)
+	if err != nil {
+		return nil, &apperr.Erro{
+			Mensagem: "Falha ao obter usuário organização público.",
+			Causa:    err,
+		}
+	}
+
+	return UsuarioOrganizacaoPublico, nil
+}
+
+func ObterUsuarioOrganizacao(ID_UsuarioOrganizacao int) (*UsuarioOrganizacao, error) {
+	db := db.ConectaBD("public")
+	defer db.Close()
+
+	var usuarioOrganizacao UsuarioOrganizacao
+
+	row := db.QueryRow("select id, usuario, organizacao, nivel_acesso from usuario_organizacao where id = $1", ID_UsuarioOrganizacao)
+
+	err := row.Scan(
+		&usuarioOrganizacao.Id,
+		&usuarioOrganizacao.Usuario,
+		&usuarioOrganizacao.Organizacao,
+		&usuarioOrganizacao.NivelAcesso)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return &UsuarioOrganizacao{}, &apperr.Erro{
+				Mensagem: "Nenhum registro encontrado!",
+			}
+		} else {
+			return &UsuarioOrganizacao{}, &apperr.Erro{
+				Mensagem: "Falha ao consultar usuário organização no banco de dados",
+				Causa:    err,
+			}
+		}
+	}
+
+	return &usuarioOrganizacao, nil
+
+}
+
+func ObterUsuarioOrganizacaoPorUsuario(ID_usuario int) (*UsuarioOrganizacao, error) {
+	db := db.ConectaBD("public")
+	defer db.Close()
+
+	var usuarioOrganizacao UsuarioOrganizacao
+
+	row := db.QueryRow("select id, usuario, organizacao, nivel_acesso from usuario_organizacao where usuario = $1", ID_usuario)
+
+	err := row.Scan(
+		&usuarioOrganizacao.Id,
+		&usuarioOrganizacao.Usuario,
+		&usuarioOrganizacao.Organizacao,
+		&usuarioOrganizacao.NivelAcesso,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return &UsuarioOrganizacao{}, &apperr.Erro{
+				Mensagem: "Nenhum registro encontrado!",
+				Causa:    err,
+			}
+		} else {
+			return &UsuarioOrganizacao{}, &apperr.Erro{
+				Mensagem: "Falha ao consultar usuário organização no banco de dados!",
+				Causa:    err,
+			}
+		}
+	}
+
+	return &usuarioOrganizacao, nil
+}
+
+func AtualizarUsuarioOrganizacao(UsuarioOrganizacao *UsuarioOrganizacao) error {
+	db := db.ConectaBD("public")
+	defer db.Close()
+
+	statement, err := db.Prepare("update usuario_organizacao set usuario=$1, organizacao=$2, nivel_acesso=$3 where id = $4")
+	if err != nil {
+		return &apperr.Erro{
+			Mensagem: "Falha ao preparar query de atualização.",
+			Causa:    err,
+		}
+	}
+
+	_, err = statement.Exec(UsuarioOrganizacao.Usuario, UsuarioOrganizacao.Organizacao, UsuarioOrganizacao.NivelAcesso, UsuarioOrganizacao.Id)
+
+	if err != nil {
+		return &apperr.Erro{
+			Mensagem: "Falha ao executar atualização do usuário organização.",
+			Causa:    err,
+		}
+	}
+
+	return nil
+}
+
+func ConverterUsuarioOrgPublico(usuarioOrganizacao *UsuarioOrganizacao) (*UsuarioOrganizacaoPublico, error) {
+
+	usuario, err := ObterUsuario(usuarioOrganizacao.Usuario)
+
+	if err != nil {
+		return &UsuarioOrganizacaoPublico{}, &apperr.Erro{
+			Mensagem: "Erro ao converter usuário organização para público.",
+			Causa:    err,
+		}
+	}
+
+	UsuarioOrganizacaoPublico := UsuarioOrganizacaoPublico{}
+
+	UsuarioOrganizacaoPublico.Id = usuarioOrganizacao.Id
+	UsuarioOrganizacaoPublico.Usuario = usuarioOrganizacao.Usuario
+	UsuarioOrganizacaoPublico.Organizacao = usuarioOrganizacao.Organizacao
+	UsuarioOrganizacaoPublico.NivelAcesso = usuarioOrganizacao.NivelAcesso
+	UsuarioOrganizacaoPublico.DataCadastro = usuarioOrganizacao.DataCadastro
+	UsuarioOrganizacaoPublico.Nome = usuario.Nome
+	UsuarioOrganizacaoPublico.Email = usuario.Email
+
+	return &UsuarioOrganizacaoPublico, nil
+}
+
+func ValidarNivelAcesso(nivelUsuario string, nivelRequerido string) error {
 
 	if nivelUsuario == nivelRequerido {
-		return true
+		return nil
 	} else {
-		return false
+		return &apperr.Erro{
+			Mensagem: "Você não possuí o nível de acesso necessário.",
+		}
 	}
 }
