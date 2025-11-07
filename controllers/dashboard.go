@@ -130,7 +130,22 @@ func ConfiguracoesHandler(w http.ResponseWriter, r *http.Request) {
 
 	mensagens := MensagemCarregaHandler(r)
 
-	organizacao := OrganizacaoCarregaHandler(r)
+	organizacao, err := OrganizacaoCarregaHandler(r)
+
+	if err != nil {
+		statusCode := http.StatusInternalServerError
+
+		if appErr, isCustom := err.(*apperr.Erro); isCustom {
+			if appErr.Status != 0 {
+				statusCode = appErr.Status
+			}
+		}
+
+		w.WriteHeader(statusCode)
+
+		templates.ExecuteTemplate(w, "erro.html", err)
+		return
+	}
 
 	usuarios := UsuariosCarregaHandler(r)
 

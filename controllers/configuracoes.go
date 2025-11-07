@@ -116,7 +116,7 @@ func OrganizacaoCarregaHandler(r *http.Request) (*IAM.Organizacao, error) {
 		}
 	}
 
-	return *organizacao, nil
+	return organizacao, nil
 }
 
 func OrganizacaoAtualizaHandler(w http.ResponseWriter, r *http.Request) {

@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"HareInteract.WebApp/models/IAM"
+	"HareInteract.WebApp/models/apperr"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -30,8 +31,26 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		if usuario == usuario_correto.Username && senha == usuario_correto.Senha {
 			usuarioOrganizacao := IAM.ObterUsuarioOrganizacaoPorUsuario(usuario_correto.Id)
 
-			organizacaoDados := IAM.ObterOrganizacao(strconv.Itoa(usuarioOrganizacao.Organizacao))
-			cpfCnpj := organizacaoDados.Cpfcnpj
+			usuarioOrganizacao_IdOrganizacao := strconv.Itoa(usuarioOrganizacao.Organizacao)
+
+			organizacao, err := IAM.ObterOrganizacao(usuarioOrganizacao_IdOrganizacao)
+
+			if err != nil {
+				statusCode := http.StatusInternalServerError
+
+				if appErr, isCustom := err.(*apperr.Erro); isCustom {
+					if appErr.Status != 0 {
+						statusCode = appErr.Status
+					}
+				}
+
+				w.WriteHeader(statusCode)
+
+				templates.ExecuteTemplate(w, "erro.html", err)
+				return
+			}
+
+			cpfCnpj := organizacao.Cpfcnpj
 
 			session, err := GetSession(r)
 			if err != nil {
