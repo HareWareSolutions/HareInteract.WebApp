@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HareInteract</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="/static/styles/menu.css">
+    <link rel="stylesheet" href="/static/styles/dashboard.css">
+    <link rel="stylesheet" href="/static/styles/agendamento.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' />
+
+    <script type="module">
+        import 'https://unpkg.com/@material/web/textfield/filled-text-field.js?module';
+        import 'https://unpkg.com/@material/web/checkbox/checkbox.js?module';
+        import 'https://unpkg.com/@material/web/button/filled-button.js?module';
+        import '@fullcalendar/web-component/global'
+    </script>
+</head>
+
+    <body>
+    {{template "menu.html"}}
+
+        <div class="main-content">
+            <h1>Agendamento</h1>
+            
+            <div class="container-agenda">
+                <div id="calendar-container">
+                    <div id='calendar'></div> 
+                </div>
+                <div id="lista-agendamentos">
+                    <h2>Agendamentos do Dia</h2>
+                    <!-- Conteúdo inicial será substituído pelo JS -->
+                    <p class="text-gray-600 text-sm italic p-4 bg-gray-50 rounded-lg">Clique em um dia para carregar a lista de agendamentos.</p>
+                </div>
+            </div>
+        </div>    
+
+        <!-- Modal para Alertas Customizados (Substitui alert()) -->
+        <div id="custom-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-xl font-medium" id="modal-title">Detalhes do Agendamento</h3>
+                    <span class="modal-close" onclick="closeCustomAlert()">&times;</span>
+                </div>
+                <div id="modal-content-area">
+                    <!-- Conteúdo do alerta/detalhe do evento -->
+                </div>
+                <button onclick="closeCustomAlert()" style="background-color: #3f51b5; color: white; padding: 8px 15px; border: none; border-radius: 4px; margin-top: 15px; cursor: pointer;">Fechar</button>
+            </div>
+        </div>
+
+        <script src="/static/scripts/dashboard.js"></script>
+        <script src="/static/scripts/agendamento.js"></script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/pt-br.global.min.js'></script>
+    </body>
+</html>

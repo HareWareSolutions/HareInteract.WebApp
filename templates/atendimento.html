@@ -20,21 +20,25 @@
 <body>
 {{template "menu.html"}}
 
-<div class="main-content">
-    <h1>Atendimento</h1>
-    
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Pesquisar..." class="search-input">
-        <span class="material-symbols-outlined search-icon">search</span>
-    </div>
+    <div class="main-content">
+        <h1>Atendimento</h1>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Pesquisar..." class="search-input">
+            <span class="material-symbols-outlined search-icon">search</span>
+        </div>
 
-    <div class="cards-grid" id="cardsGrid">
-        <a href="/tickets" class="card" data-title="Tickets">
-            <span class="material-symbols-outlined icon">receipt</span>
-            <p>Tickets</p>
-        </a>
+        <div class="cards-grid" id="cardsGrid">
+            <a href="/tickets" class="card" data-title="Tickets">
+                <span class="material-symbols-outlined icon">receipt</span>
+                <p>Tickets</p>
+            </a>
+            <a href="/agendamento" class="card" data-title="Agendamento">
+                <span class="material-symbols-outlined icon">calendar_clock</span>
+                <p>Agendamento</p>
+            </a>
+        </div>
     </div>
-</div>
 
 <script src="/static/scripts/dashboard.js"></script>
 </body>

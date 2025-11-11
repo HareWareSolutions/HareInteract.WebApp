@@ -1,8 +1,9 @@
 package IAM
 
 import (
-	"HareInteract.WebApp/db"
 	"fmt"
+
+	"HareInteract.WebApp/db"
 )
 
 type Credencial struct {
