@@ -1,7 +1,7 @@
 /* Seus estilos de Layout */
         #calendar {
-            max-height: 1100px;
-            max-width: 100%; /* Ajustado para ser mais flexível */
+            max-width: 100%;
+            max-height: 80%;
         }
 
         .container-agenda {

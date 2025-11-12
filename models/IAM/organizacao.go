@@ -52,20 +52,14 @@ func DeletaOrganizacao(id string) error {
 	deletarOrganizacao, err := db.Prepare("delete from organizacao where id = $1")
 
 	if err != nil {
-		return &apperr.Erro{
-			Mensagem: "Falha ao preparar query de remoção",
-			Causa:    err,
-		}
+		return err
 	}
 
 	defer deletarOrganizacao.Close()
 
 	_, err = deletarOrganizacao.Exec(id)
 	if err != nil {
-		return &apperr.Erro{
-			Mensagem: "Falha ao remover organização!",
-			Causa:    err,
-		}
+		return err
 	}
 
 	return nil

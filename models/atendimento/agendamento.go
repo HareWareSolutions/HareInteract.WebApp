@@ -16,17 +16,14 @@ type Agendamento struct {
 }
 
 type FullCalendarEvent struct {
-	Title           string `json:"title"`
-	Start           string `json:"start"`
-	End             string `json:"end"`
-	AllDay          bool   `json:"allDay"`
-	BackgroundColor string `json:"backgroundColor"`
-	ExtendedProps   struct {
-		Contato_id  int    `json:"contato_id"`
-		Usuario_id  int    `json:"usuario_id"`
-		Confirmacao bool   `json:"confirmacao"`
-		Observacao  string `json:"observacao"`
-		Link        string `json:"link"`
+	Title         string `json:"title"`
+	Start         string `json:"start"`
+	ExtendedProps struct {
+		Contato_id     int    `json:"contato_id"`
+		Responsavel_id int    `json:"responsavel_id"`
+		Confirmacao    bool   `json:"confirmacao"`
+		Observacao     string `json:"observacao"`
+		Link           string `json:"link"`
 	} `json:"extendedProps"`
 }
 
