@@ -3,7 +3,6 @@ package IAM
 import (
 	"database/sql"
 	"fmt"
-	"net/http"
 	"time"
 
 	"HareInteract.WebApp/db"
@@ -22,30 +21,25 @@ type Organizacao struct {
 	DataCadastro  time.Time `json:"dataCadastro" validate:"required"`
 }
 
-func CriarOrganizacao(nome string, responsavelId int, cpfcnpj string, pais string, cidade string, estado string, telefone string) error {
+func CriarOrganizacao(organizacao *Organizacao) error {
 	db := db.ConectaBD("public")
 	defer db.Close()
 
 	dataCadastro := time.Now()
 
-	cadastrarOrganizacao, err := db.Prepare("insert into organizacao(nome, responsavel, cpfcnpj, pais, cidade, estado, telefone, data_cadastro) values($1, $2, $3, $4, $5, $6, $7, $8)")
+	statement, err := db.Prepare("insert into organizacao(nome, responsavel, cpfcnpj, pais, cidade, estado, telefone, data_cadastro) values($1, $2, $3, $4, $5, $6, $7, $8)")
 
 	if err != nil {
-		return &apperr.Erro{
-			Mensagem: "Falha ao preparar query de inserção!",
-			Causa:    err,
-		}
+		return err
 	}
 
-	defer cadastrarOrganizacao.Close()
+	defer statement.Close()
 
-	_, err = cadastrarOrganizacao.Exec(nome, responsavelId, cpfcnpj, pais, cidade, estado, telefone, dataCadastro)
+	_, err = statement.Exec(organizacao.Nome, organizacao.ResponsavelId, organizacao.Cpfcnpj, organizacao.Pais, organizacao.Cidade, organizacao.Estado, organizacao.Telefone, dataCadastro)
 
 	if err != nil {
-		return &apperr.Erro{
-			Mensagem: "Falha ao executar a inserção da organização!",
-			Causa:    err,
-		}
+		return err
+
 	}
 
 	return nil
@@ -91,16 +85,9 @@ func ObterOrganizacao(id string) (*Organizacao, error) {
 	if err != nil {
 
 		if err == sql.ErrNoRows {
-			return nil, &apperr.Erro{
-				Mensagem: "Nenhum registro encontrado!",
-				Status:   http.StatusNotFound,
-			}
+			return nil, err
 		} else {
-			return nil, &apperr.Erro{
-				Mensagem: "Falha ao consultar organização no banco de dados!",
-				Causa:    err,
-				Status:   http.StatusInternalServerError,
-			}
+			return nil, err
 		}
 
 	}

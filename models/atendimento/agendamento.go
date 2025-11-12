@@ -15,66 +15,91 @@ type Agendamento struct {
 	Link        string `json:"link"`
 }
 
-func CriarAgendamento(search_path string, data, hora string, contato_id, usuario_id int, confirmacao bool, observacao, link string) {
+type FullCalendarEvent struct {
+	Title           string `json:"title"`
+	Start           string `json:"start"`
+	End             string `json:"end"`
+	AllDay          bool   `json:"allDay"`
+	BackgroundColor string `json:"backgroundColor"`
+	ExtendedProps   struct {
+		Contato_id  int    `json:"contato_id"`
+		Usuario_id  int    `json:"usuario_id"`
+		Confirmacao bool   `json:"confirmacao"`
+		Observacao  string `json:"observacao"`
+		Link        string `json:"link"`
+	} `json:"extendedProps"`
+}
+
+func CriarAgendamento(agendamento *Agendamento, search_path string) error {
 	firstChar := search_path[0]
 	if firstChar >= '0' && firstChar <= '9' {
 		search_path = "C" + search_path
 	}
 
 	db := db.ConectaBD(search_path)
+	defer db.Close()
 
-	cadastrarAgendamento, err := db.Prepare(`
+	statement, err := db.Prepare(`
 		INSERT INTO agendamento (data, hora, contato_id, usuario_id, confirmacao, observacao, link)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`)
+
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
-	_, err = cadastrarAgendamento.Exec(data, hora, contato_id, usuario_id, confirmacao, observacao, link)
+	_, err = statement.Exec(agendamento.Data, agendamento.Hora, agendamento.Contato_id, agendamento.Usuario_id, agendamento.Confirmacao, agendamento.Observacao, agendamento.Link)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
-	defer db.Close()
+
+	return nil
 }
 
-func DeletaAgendamento(search_path string, id int) {
+func DeletaAgendamento(search_path string, id int) error {
 	firstChar := search_path[0]
 	if firstChar >= '0' && firstChar <= '9' {
 		search_path = "C" + search_path
 	}
 
 	db := db.ConectaBD(search_path)
+	defer db.Close()
 
-	deletarAgendamento, err := db.Prepare("DELETE FROM agendamento WHERE id = $1")
+	statement, err := db.Prepare("DELETE FROM agendamento WHERE id = $1")
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
-	deletarAgendamento.Exec(id)
-	defer db.Close()
+	_, err = statement.Exec(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func ObterAgendamento(search_path string, id int) Agendamento {
+func ObterAgendamento(search_path string, id int) (*Agendamento, error) {
 	firstChar := search_path[0]
 	if firstChar >= '0' && firstChar <= '9' {
 		search_path = "C" + search_path
 	}
 
 	db := db.ConectaBD(search_path)
+	defer db.Close()
 
-	agendamento, err := db.Query(`
+	result, err := db.Query(`
 		SELECT id, data, hora, contato_id, usuario_id, confirmacao, observacao, link
 		FROM agendamento WHERE id = $1
 	`, id)
+
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	agendamentoObtido := Agendamento{}
 
-	for agendamento.Next() {
-		err = agendamento.Scan(
+	for result.Next() {
+		err = result.Scan(
 			&agendamentoObtido.Id,
 			&agendamentoObtido.Data,
 			&agendamentoObtido.Hora,
@@ -85,68 +110,69 @@ func ObterAgendamento(search_path string, id int) Agendamento {
 			&agendamentoObtido.Link,
 		)
 		if err != nil {
-			panic(err.Error())
+			return nil, err
 		}
 	}
-	defer db.Close()
 
-	return agendamentoObtido
+	return &agendamentoObtido, nil
 }
 
-func AtualizarAgendamento(search_path string, id, contato_id, usuario_id int, data, hora, observacao, link string, confirmacao bool) {
+func AtualizarAgendamento(agendamento *Agendamento, search_path string) error {
 	firstChar := search_path[0]
 	if firstChar >= '0' && firstChar <= '9' {
 		search_path = "C" + search_path
 	}
 
 	db := db.ConectaBD(search_path)
+	defer db.Close()
 
-	agendamentoAtualizado, err := db.Prepare(`
+	statement, err := db.Prepare(`
 		UPDATE agendamento
 		SET data=$1, hora=$2, contato_id=$3, usuario_id=$4, confirmacao=$5, observacao=$6, link=$7
 		WHERE id=$8
 	`)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
 
-	_, err = agendamentoAtualizado.Exec(data, hora, contato_id, usuario_id, confirmacao, observacao, link, id)
+	_, err = statement.Exec(agendamento.Data, agendamento.Hora, agendamento.Contato_id, agendamento.Usuario_id, agendamento.Confirmacao, agendamento.Observacao, agendamento.Link, agendamento.Id)
 	if err != nil {
-		panic(err.Error())
+		return err
 	}
+	return nil
 
-	defer db.Close()
 }
 
-func ListarAgendamentos(search_path, mes string) []Agendamento {
+func ListarAgendamentos(search_path, mes string) ([]Agendamento, error) {
 	firstChar := search_path[0]
 	if firstChar >= '0' && firstChar <= '9' {
 		search_path = "C" + search_path
 	}
 
 	db := db.ConectaBD(search_path)
+	defer db.Close()
 
-	rows, err := db.Query(`
+	result, err := db.Query(`
 		SELECT id, data, hora, contato_id, usuario_id, confirmacao, observacao, link
 		FROM agendamento
 		WHERE TO_CHAR(data, 'YYYY-MM') = $1
 		ORDER BY data, hora
 	`, mes)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
 	var agendamentos []Agendamento
 
-	for rows.Next() {
-		a := Agendamento{}
-		err = rows.Scan(&a.Id, &a.Data, &a.Hora, &a.Contato_id, &a.Usuario_id, &a.Confirmacao, &a.Observacao, &a.Link)
+	for result.Next() {
+		agendamento := Agendamento{}
+		err = result.Scan(&agendamento.Id, &agendamento.Data, &agendamento.Hora, &agendamento.Contato_id, &agendamento.Usuario_id, &agendamento.Confirmacao, &agendamento.Observacao, &agendamento.Link)
 		if err != nil {
-			panic(err.Error())
+			return nil, err
 		}
-		agendamentos = append(agendamentos, a)
+		agendamentos = append(agendamentos, agendamento)
 	}
 
 	defer db.Close()
-	return agendamentos
+	return agendamentos, nil
 }
