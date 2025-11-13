@@ -17,16 +17,22 @@ func CarregaRotas() {
 	http.HandleFunc("/vendas", controllers.AuthMiddleware(controllers.VendasHandler))
 	http.HandleFunc("/marketing", controllers.AuthMiddleware(controllers.MarketingHandler))
 	http.HandleFunc("/atendimento", controllers.AuthMiddleware(controllers.AtendimentoHandler))
-	http.HandleFunc("/agendamento", controllers.AuthMiddleware(controllers.AgendamentoHandler))
+
+	//Rotas ligadas ao agendamento
+	http.HandleFunc("GET /agendamento", controllers.AuthMiddleware(controllers.AgendamentoHandler))
+
 	http.HandleFunc("/timeline", controllers.AuthMiddleware(controllers.TimelineHandler))
 	http.HandleFunc("/integracoes", controllers.AuthMiddleware(controllers.IntegracoesHandler))
 	http.HandleFunc("/configuracoes", controllers.AuthMiddleware(controllers.ConfiguracoesHandler))
 	http.HandleFunc("/configuracoes/atualizar", controllers.AuthMiddleware(controllers.PerfilConfigAtualizarHandler))
 	http.HandleFunc("/configuracoes/excluir/usuario", controllers.AuthMiddleware(controllers.PerfilConfigExcluirHandler))
 	http.HandleFunc("/configuracoes/excluirMensagem", controllers.AuthMiddleware(controllers.MensagemExcluirHandler))
+
+	// Rotas ligadas a usuário de organização
 	http.HandleFunc("/configuracoes/salvarUserOrg", controllers.AuthMiddleware(controllers.UsuarioAtualizaHandler))
 	http.HandleFunc("/configuracoes/atualizarorganizacao", controllers.AuthMiddleware(controllers.OrganizacaoAtualizaHandler))
 	http.HandleFunc("/configuracoes/excluirUsuarioOrganizacao", controllers.AuthMiddleware(controllers.UsuarioExcluirHandler))
+
 	http.HandleFunc("/configuracoes/sairOrganizacao", controllers.AuthMiddleware(controllers.UsuarioSairOrganizacao))
 	http.HandleFunc("/configuracoes/convidar", controllers.AuthMiddleware(controllers.UsuarioConvidarOrganizacao))
 	http.HandleFunc("/contatos", controllers.AuthMiddleware(controllers.ContatosHandler))
