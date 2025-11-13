@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HareInteract</title>
-
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel="stylesheet" href="/static/styles/menu.css">
@@ -25,37 +23,22 @@
 
         <div class="main-content">
             <h1>Agendamento</h1>
-            
-            <div class="container-agenda">
-                <div id="calendar-container">
-                    <md-filled-button id="add-agendamento-btn" onclick="window.location.href='/adicionar-agendamento'">
-                        <span class="material-symbols-outlined">add</span>
-                        Adicionar Agendamento
-                    </md-filled-button>
-                    <div id='calendar'></div> 
-                </div>
-                
-                <div id="lista-agendamentos">
-                    <h2>Agendamentos do Dia</h2>
-                    <!-- Conteúdo inicial será substituído pelo JS -->
-                    <p class="text-gray-600 text-sm italic p-4 bg-gray-50 rounded-lg">Clique em um dia para carregar a lista de agendamentos.</p>
-                </div>
-            </div>
-        </div>    
 
-        <!-- Modal para Alertas Customizados (Substitui alert()) -->
-        <div id="custom-modal" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="text-xl font-medium" id="modal-title">Detalhes do Agendamento</h3>
-                    <span class="modal-close" onclick="closeCustomAlert()">&times;</span>
+            <div class="calendario-layout">
+                <div class="container-agenda">
+                    <div id="calendar-container">
+                        <div id='calendar'></div> 
+                    </div>
                 </div>
-                <div id="modal-content-area">
-                    <!-- Conteúdo do alerta/detalhe do evento -->
+                <div class="container-agendamentos">
+                    <h2>Meus agendamentos</h2>
+                    <div id="lista-agendamentos">
+                        <!-- Lista de agendamentos será inserida aqui via JavaScript -->
+                    </div>
                 </div>
-                <button onclick="closeCustomAlert()" style="background-color: #3f51b5; color: white; padding: 8px 15px; border: none; border-radius: 4px; margin-top: 15px; cursor: pointer;">Fechar</button>
             </div>
         </div>
+
 
         <script src="/static/scripts/dashboard.js"></script>
         <script src="/static/scripts/agendamento.js"></script>
