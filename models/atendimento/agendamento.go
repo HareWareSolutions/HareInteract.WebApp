@@ -22,7 +22,6 @@ type FullCalendarEvent struct {
 		Contato_id     int    `json:"contato_id"`
 		Responsavel_id int    `json:"responsavel_id"`
 		Confirmacao    bool   `json:"confirmacao"`
-		Observacao     string `json:"observacao"`
 		Link           string `json:"link"`
 	} `json:"extendedProps"`
 }

@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="https://unpkg.com/@material/web/dist/material-web.css">
     <link rel="stylesheet" href="/static/styles/menu.css">
     <link rel="stylesheet" href="/static/styles/dashboard.css">
     <link rel="stylesheet" href="/static/styles/agendamento.css">
@@ -39,6 +41,18 @@
             </div>
         </div>
 
+        <div class="modal-container" id="modal-edit-event">
+            <div class="modal">
+                <h2>Editar Agendamento</h2>
+                <div class="modal-content">
+                    <!-- Conteúdo do modal será inserido via JavaScript -->
+                </div>
+                <div class="modal-actions">
+                    <button id="modal-save-button" >Salvar</button>
+                    <button class="cancel-button" id="modal-cancel-button">Cancelar</button>
+                </div>            
+            </div>
+        </div>
 
         <script src="/static/scripts/dashboard.js"></script>
         <script src="/static/scripts/agendamento.js"></script>

@@ -1,3 +1,9 @@
+/*Estilos gerais*/
+
+button{
+    cursor:pointer;
+}
+
 /* Seus estilos de Layout */
         #calendar {
             max-height: 800px;
@@ -40,6 +46,42 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
+/*Estilização do Modal*/
+
+.modal-container {
+    display: none; /* Oculto por padrão */
+    background-color: rgba(0, 0, 0, 0.3);
+    align-items: center;
+    justify-content: center;
+    position: fixed; /* Corrigido de 'relative' para 'fixed' */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000; /* Movido para o container para garantir que fique na frente */
+}
+
+.modal{
+    background-color: #fff;
+    width: 500px;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end; /* Alinha botões à direita */
+    gap: 16px;                 /* Espaçamento entre os botões */
+    width: 90%;                /* Mesma largura do .modal-content */
+    margin-top: 20px;
+}
 
 /*Estilos de componentes fullCalendar*/
 
